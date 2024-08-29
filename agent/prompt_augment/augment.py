@@ -1,15 +1,18 @@
 from abc import ABC, abstractmethod
+from typing import List
+from langchain_core.messages.base import BaseMessage
 
 
-class PromtAugmenter(ABC):
+class PromptAugmenter(ABC):
 
     @abstractmethod
-    def augment(self, prompt : str) -> str:
+    def augment(self, code : str, file_path : str, code_context : str = "", vulnerability_context : str = "") -> List[BaseMessage]:
         '''
         Provides the code context with snippet extraction
 
         Args:
-            prompt       (str)               : Prompt that will be augmented
+            code       (str)               : Code to be added
+            file_path       (str)          : File path of the code
 
         Returns:
             string : the augmented prompt

@@ -1,20 +1,22 @@
-#include <cstring>
 #include <iostream>
+#include <cstdlib>
 
-void copyInput(char* input) {
-    char buffer[10];
-    strcpy(buffer, input);
+void vulnerableFunction() {
+    int* ptr = (int*)malloc(sizeof(int));  // Dynamically allocate memory
+    if (ptr == nullptr) {
+        std::cerr << "Memory allocation failed" << std::endl;
+        return;
+    }
+
+    *ptr = 42;  // Assign a value to the allocated memory
+
+    free(ptr);  // Free the allocated memory
+
+    // Double-free vulnerability: freeing the memory again
+    free(ptr);
 }
 
 int main() {
-    char userInput[100];
-
-    std::cout << 'Enter text: ';
-    std::cin >> userInput;
-
-    copyInput(userInput);
-
-    std::cin >> userInput;
-
+    vulnerableFunction();
     return 0;
 }

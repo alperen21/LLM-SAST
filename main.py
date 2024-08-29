@@ -1,15 +1,11 @@
 #!/home/alp/Project/venv/bin/python
 from llm.chatgpt import ChatGPT_LLM_Chain
+from agent.prompt_augment.basic_augment import BasicAugmenter
+from agent.agent.BasicRagAgent import BasicRagAgent
 
 def main():
-    chain = ChatGPT_LLM_Chain()
-    response = chain.invoke('hello world')
+    BasicRagAgent().run()
 
-    print(response)
-
-    response = chain.invoke('what did you say again?')
-
-    print(response)
 
 if __name__ == '__main__':
     main()

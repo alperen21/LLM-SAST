@@ -6,24 +6,31 @@ class CodeQL(SAST):
     def __init__(self) -> None:
         super().__init__()
     
-    def __read_sariff(self, results_path):
+    def __read_sarif(self, results_path):
         with open(results_path, 'r') as sarif_file:
             sarif_data = json.load(sarif_file)
 
-        # Extract and print information
+        results_list = []
+
         for run in sarif_data.get('runs', []):
             tool = run['tool']['driver']
-            print(f"Tool: {tool['name']} {tool.get('version', '')}")
-            
+            tool_info = {
+                "tool_name": tool['name'],
+                "tool_version": tool.get('version', '')
+            }
+
             for result in run.get('results', []):
                 rule_id = result.get('ruleId')
                 message = result['message']['text']
                 level = result.get('level', 'warning')
                 
-                print(f"Rule ID: {rule_id}")
-                print(f"Message: {message}")
-                print(f"Severity: {level}")
-                
+                result_info = {
+                    "rule_id": rule_id,
+                    "message": message,
+                    "severity": level,
+                    "locations": []
+                }
+
                 for location in result.get('locations', []):
                     physical_location = location.get('physicalLocation', {})
                     artifact_location = physical_location.get('artifactLocation', {}).get('uri', 'Unknown')
@@ -32,10 +39,21 @@ class CodeQL(SAST):
                     start_line = region.get('startLine', 'Unknown')
                     end_line = region.get('endLine', start_line)
                     
-                    print(f"File: {artifact_location}")
-                    print(f"Start Line: {start_line}")
-                    print(f"End Line: {end_line}")
-                    print()
+                    location_info = {
+                        "file": artifact_location,
+                        "start_line": start_line,
+                        "end_line": end_line
+                    }
+                    
+                    result_info["locations"].append(location_info)
+
+                # Add the result info to the results list
+                results_list.append({
+                    "tool_info": tool_info,
+                    "result_info": result_info
+                })
+
+        return results_list
 
 
     
@@ -56,4 +74,4 @@ class CodeQL(SAST):
             subprocess.run(command, shell=True)
             print('===========================')
         
-        self.__read_sariff(results_path)
+        return self.__read_sarif(results_path)

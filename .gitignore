@@ -1,0 +1,7 @@
+agent/rag/resources/*
+*/__pycache__/*
+myenv/*
+*sarif
+demo/*
+test.py
+database/*
