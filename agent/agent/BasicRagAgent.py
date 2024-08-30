@@ -4,7 +4,7 @@ from llm.chatgpt import ChatGPT_LLM_Chain
 from sast.tools import execute_codeql
 from agent.prompt_augment.basic_augment import BasicAugmenter 
 from agent.rag.vector_database.initialize import ChromaVectorDatabaseInitializer
-from agent.code_context.basic_context import BasicContextProvider
+from agent.code_context.cpp import CppFunctionContextProvider
 from langchain.tools import Tool
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
@@ -19,7 +19,7 @@ class BasicRagAgent():
         
         self.sast = CodeQL()
         self.llm = ChatGPT_LLM_Chain(gpt_version='gpt-3.5-turbo-0125')
-        self.contextProvider = BasicContextProvider()
+        self.contextProvider = CppFunctionContextProvider()
         self.promptAugmenter = BasicAugmenter()
         self.ragEngine = ChromaVectorDatabaseInitializer(database_path = "./database", resources_path = "./resources")
         

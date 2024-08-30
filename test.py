@@ -1,52 +1,10 @@
-from langchain_community.document_loaders import PyMuPDFLoader
-from langchain_openai import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
-
-# Step 1: Load the documents
-pdf_files = [
-    "agent/rag/resources/OWASP_Testing_Guide_v4-2.pdf",
-    "agent/rag/resources/nistir7435.pdf"
-]
-
-documents = []
-for pdf_file in pdf_files:
-    loader = PyMuPDFLoader(pdf_file)
-    documents.extend(loader.load())
-
-# Step 2: Split the documents into chunks
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-chunks = text_splitter.split_documents(documents)
-
-# Step 3: Create embeddings for the chunks
-embeddings = OpenAIEmbeddings()
-
-# Step 4: Define the persistence directory
-persist_directory = "./database"
-
-# Step 5: Create the Chroma vector store and persist it
-vector_db = Chroma.from_documents(chunks, embeddings, persist_directory=persist_directory)
-
-# Step 6: Persist the database
-
-# Step 7: Create a retriever from the Chroma vector store
-retriever = vector_db.as_retriever()
-
-print(f"Vector database has been persisted at {persist_directory}")
 
 
-#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====#====
-# Step 1: Define the persistence directory
-persist_directory = "./database"
+print("""
+      The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
 
-# Step 2: Load the persisted Chroma vector store
-vector_db = Chroma(persist_directory=persist_directory, embedding_function=OpenAIEmbeddings())
+Current conversation:
 
-# Step 3: Create a retriever from the Chroma vector store
-retriever = vector_db.as_retriever()
-
-# Step 4: Use the retriever to perform similarity search or any retrieval operation
-query = "What are the common security testing practices in OWASP?"
-results = retriever.invoke(query)
-# for result in results:
-#     print(result.page_content)
+Human: [HumanMessage(content='\n        ### Task:\n        You are a cybersecurity expert and code auditor. \n        Your task is to analyze the following code and detect any potential security vulnerabilities.\n        Focus on common security issues such as injection attacks, buffer overflows, insecure data handling, authentication flaws, and improper access controls.\n        You will also receive results from a static analysis tool to help you identify potential vulnerabilities, note that SAST tool may not be correct all the time.\n        If there is any further code context it will be given to you under \'### Code Context:\'\n        If there is any further vulnerability context it will be given to you under \'### Vulnerability Context:\'\n        \n        \n        ### File:\n        main.cpp\n        \n        ### Code:\n        void vulnerableFunction() {\n    int* ptr = (int*)malloc(sizeof(int));  // Dynamically allocate memory\n    if (ptr == nullptr) {\n        std::cerr << "Memory allocation failed" << std::endl;\n        return;\n    }\n\n    *ptr = 42;  // Assign a value to the allocated memory\n\n    free(ptr);  // Free the allocated memory\n\n    // Double-free vulnerability: freeing the memory again\n    free(ptr);\n}\n\n        \n        ### Code Context:\n        void vulnerableFunction() {\n    int* ptr = (int*)malloc(sizeof(int));  // Dynamically allocate memory\n    if (ptr == nullptr) {\n        std::cerr << "Memory allocation failed" << std::endl;\n        return;\n    }\n\n    *ptr = 42;  // Assign a value to the allocated memory\n\n    free(ptr);  // Free the allocated memory\n\n    // Double-free vulnerability: freeing the memory again\n    free(ptr);\n}\n\n        \n        ### SAST Results:\n        Memory pointed to by [ptr](1) may already have been freed by [call to free](2).\n        \n        ### Vulnerability Context:\n        fer on a web banking application to appreciate the implications.\nBy using a tag such as img, as specified in point 4 above, it is not \neven necessary that the user follows a particular link. Suppose the \nattacker sends the user an email inducing him to visit an URL re-\nferring to a page containing the following (oversimplified) HTML:\nWhat the browser will do when it displays this page is that it will \ntry to display the specified zero-width (i.e., invisible) image as well. \nThis results in a request being automatically sent to the web ap-\nplication hosted on site. It is not important that the image URL \ndoes not refer to a proper image, its presence will trigger the re-\nquest specified in the src field anyway. This happens provided that \nimage download is not disabled in the browsers, which is a typical \nconfiguration since disabling images would cripple most web ap-\nplications beyond usability.\nThe problem here is a consequence of the following facts:\nfer on a web banking application to appreciate the implications.\nBy using a tag such as img, as specified in point 4 above, it is not \neven necessary that the user follows a particular link. Suppose the \nattacker sends the user an email inducing him to visit an URL re-\nferring to a page containing the following (oversimplified) HTML:\nWhat the browser will do when it displays this page is that it will \ntry to display the specified zero-width (i.e., invisible) image as well. \nThis results in a request being automatically sent to the web ap-\nplication hosted on site. It is not important that the image URL \ndoes not refer to a proper image, its presence will trigger the re-\nquest specified in the src field anyway. This happens provided that \nimage download is not disabled in the browsers, which is a typical \nconfiguration since disabling images would cripple most web ap-\nplications beyond usability.\nThe problem here is a consequence of the following facts:\nfer on a web banking application to appreciate the implications.\nBy using a tag such as img, as specified in point 4 above, it is not \neven necessary that the user follows a particular link. Suppose the \nattacker sends the user an email inducing him to visit an URL re-\nferring to a page containing the following (oversimplified) HTML:\nWhat the browser will do when it displays this page is that it will \ntry to display the specified zero-width (i.e., invisible) image as well. \nThis results in a request being automatically sent to the web ap-\nplication hosted on site. It is not important that the image URL \ndoes not refer to a proper image, its presence will trigger the re-\nquest specified in the src field anyway. This happens provided that \nimage download is not disabled in the browsers, which is a typical \nconfiguration since disabling images would cripple most web ap-\nplications beyond usability.\nThe problem here is a consequence of the following facts:\nfer on a web banking application to appreciate the implications.\nBy using a tag such as img, as specified in point 4 above, it is not \neven necessary that the user follows a particular link. Suppose the \nattacker sends the user an email inducing him to visit an URL re-\nferring to a page containing the following (oversimplified) HTML:\nWhat the browser will do when it displays this page is that it will \ntry to display the specified zero-width (i.e., invisible) image as well. \nThis results in a request being automatically sent to the web ap-\nplication hosted on site. It is not important that the image URL \ndoes not refer to a proper image, its presence will trigger the re-\nquest specified in the src field anyway. This happens provided that \nimage download is not disabled in the browsers, which is a typical \nconfiguration since disabling images would cripple most web ap-\nplications beyond usability.\nThe problem here is a consequence of the following facts:\n        \n\n        ### Requirements:\n        1. **Identify Vulnerabilities**: Analyze the code and identify any potential security vulnerabilities.\n        2. **Reply**: Reply with @@Vulnerable@@ if you find any vulnerabilities, or @@Secure@@ if you don\'t.\n        ')]
+AI:
+      """)
