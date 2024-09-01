@@ -11,8 +11,10 @@ class BasicAugmenter(PromptAugmenter):
         ### Task:
         You are a cybersecurity expert and code auditor. 
         Your task is to analyze the following code and detect any potential security vulnerabilities.
-        Focus on common security issues such as injection attacks, buffer overflows, insecure data handling, authentication flaws, and improper access controls.
-        You will also receive results from a static analysis tool to help you identify potential vulnerabilities, note that SAST tool may not be correct all the time.
+        Focus on common security issues such as:
+        injection attacks, buffer overflows, insecure data handling, authentication flaws, and improper access controls.
+        You will also receive results from a static analysis tool to help you identify potential vulnerabilities, 
+        note that SAST tool may not be correct all the time.
         If there is any further code context it will be given to you under '### Code Context:'
         If there is any further vulnerability context it will be given to you under '### Vulnerability Context:'
         
@@ -37,6 +39,7 @@ class BasicAugmenter(PromptAugmenter):
         1. **Identify Vulnerabilities**: Analyze the code and identify any potential security vulnerabilities.
         2. **Reply**: Reply with @@Vulnerable@@ if you find any vulnerabilities, or @@Secure@@ if you don't.
         """
+        
         
         self.prompt_template = ChatPromptTemplate.from_template(template_string)
 

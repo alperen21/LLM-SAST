@@ -63,15 +63,15 @@ class CodeQL(SAST):
         database_path = kwargs['database_path']
         results_path = kwargs['results_path']
 
-        self.commands = [
-            f"make -C {source_root} clean",
-            f"codeql database create '{database_path}' --language=cpp --overwrite --source-root='{source_root}'",
-            f"codeql database analyze '{database_path}' --format=sarif-latest --output={results_path}"
-        ]
+        # self.commands = [
+        #     f"make -C {source_root} clean",
+        #     f"codeql database create '{database_path}' --language=cpp --overwrite --source-root='{source_root}'",
+        #     f"codeql database analyze '{database_path}' --format=sarif-latest --output={results_path}"
+        # ]
 
-        for command in self.commands:
-            print('executing:', command)
-            subprocess.run(command, shell=True)
-            print('===========================')
+        # for command in self.commands:
+        #     print('executing:', command)
+        #     subprocess.run(command, shell=True)
+        #     print('===========================')
         
         return self.__read_sarif(results_path)
