@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "main.py", line 3, in <module>
+    from experiment.SingleQueryCodeQLPipeline import SingleQueryCodeQLPipeline
+  File "/Users/alperen/Projects/LLM-SAST/experiment/SingleQueryCodeQLPipeline.py", line 2, in <module>
+    from agent.agent.agent import Agent
+  File "/Users/alperen/Projects/LLM-SAST/agent/agent/agent.py", line 4, in <module>
+    from agent.prompt_augment import augment
+  File "/Users/alperen/Projects/LLM-SAST/agent/prompt_augment/augment.py", line 3, in <module>
+    from langchain_core.messages.base import BaseMessage
+  File "/Users/alperen/Projects/LLM-SAST/myenv/lib/python3.8/site-packages/langchain_core/__init__.py", line 11, in <module>
+    from importlib import metadata
+  File "/usr/local/opt/python@3.8/Frameworks/Python.framework/Versions/3.8/lib/python3.8/importlib/metadata.py", line 9, in <module>
+    import zipfile
+  File "/usr/local/opt/python@3.8/Frameworks/Python.framework/Versions/3.8/lib/python3.8/zipfile.py", line 13, in <module>
+    import shutil
+  File "/usr/local/opt/python@3.8/Frameworks/Python.framework/Versions/3.8/lib/python3.8/shutil.py", line 15, in <module>
+    import zlib
+KeyboardInterrupt

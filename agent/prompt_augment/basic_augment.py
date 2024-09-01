@@ -9,15 +9,8 @@ class BasicAugmenter(PromptAugmenter):
         
         template_string = """
         ### Task:
-        You are a cybersecurity expert and code auditor. 
-        Your task is to analyze the following code and detect any potential security vulnerabilities.
-        Focus on common security issues such as:
-        injection attacks, buffer overflows, insecure data handling, authentication flaws, and improper access controls.
-        You will also receive results from a static analysis tool to help you identify potential vulnerabilities, 
-        note that SAST tool may not be correct all the time.
-        If there is any further code context it will be given to you under '### Code Context:'
-        If there is any further vulnerability context it will be given to you under '### Vulnerability Context:'
-        
+        Analyze the following code and detect any potential security vulnerabilities.
+        You will also receive results from SAST tools (may not be correct all the time)
         
         ### File:
         {file_path}
@@ -35,9 +28,12 @@ class BasicAugmenter(PromptAugmenter):
         {vulnerability_context}
         
 
-        ### Requirements:
-        1. **Identify Vulnerabilities**: Analyze the code and identify any potential security vulnerabilities.
-        2. **Reply**: Reply with @@Vulnerable@@ if you find any vulnerabilities, or @@Secure@@ if you don't.
+        Reply with the following format:\n.
+            ***\n
+                file_path -> file path, \n
+                function_name -> function_name, \n
+                decision -> @@Vulnerable@@  or @@Secure@@\n
+             ***\n
         """
         
         

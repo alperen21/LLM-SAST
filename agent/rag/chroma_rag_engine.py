@@ -23,5 +23,11 @@ class ChromaRagEngine(RagEngine):
         """
         if self.retriever is None:
             self.retriever = self.vector_db_initializer.get_retriever()
-        return self.retriever.get_relevant_chunks(question, context)
+        relevant_chunks =  self.retriever.get_relevant_chunks(question, context)
+        
+        
+        if relevant_chunks:
+            return relevant_chunks[0]  # Return the top chunk (most relevant)
+        else:
+            return None 
 

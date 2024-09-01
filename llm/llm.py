@@ -38,8 +38,7 @@ class LLM_Chain(ABC):
         self.verbose = verbose
 
         self.chain = ConversationChain(
-            llm = self.llm,
-            memory = self.memory,
+            llm = self.llm, #TODO: Removed memory do this more elegantly
             verbose = self.verbose
         )
     
