@@ -19,7 +19,7 @@ def make_decision(input_str) -> None:
     Returns:
         None
     """
-    if "vulnerable" in input_str:
+    if "vulnerable" in input_str.lower():
         print("Vulnerable")
     else:
         print("Not Vulnerable")

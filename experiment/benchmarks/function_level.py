@@ -144,6 +144,10 @@ class PrimeVulBenchmark:
         self.verbose_results[label][prediction].append(self.index)
     
     def get_results(self):
+        
+        if not os.path.exists(self.result_dir):
+            os.makedirs(self.result_dir)
+            
         # Dump self.results into a JSON file
         with open(os.path.join(self.result_dir, 'results.json'), 'w') as file:
             json.dump(self.results, file)

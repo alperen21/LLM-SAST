@@ -28,7 +28,7 @@ class AgentToSast:
         augmented_prompt = self.augmenter.augment(function_body)
         response = self.agent.run(augmented_prompt)
         
-        if "@@vulnerable@@" in response:
+        if "@@vulnerable@@" in response.lower():
             return 1
         else:
             return 0

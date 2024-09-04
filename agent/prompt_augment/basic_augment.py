@@ -17,6 +17,8 @@ class BasicAugmenter(PromptAugmenter):
         
         If you are not sure, you can execute any of the tools provided to help you make a decision such as SAST tools\n
         Make note that the output of SAST tools may not always be correct.\n
+        
+        When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
         """
         
         
