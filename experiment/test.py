@@ -1,16 +1,8 @@
-from experiment.benchmarks.function_level import PrimeVulBenchmark
-from config import Config
-from experiment.util import RipgrepFunctionFinder
-from pprint import pprint
-from tqdm import tqdm
-
-def test(total_test_case_num = 2):
+def function_level_test(pipeline, benchmark, total_test_case_num = 2):
     
     test_case_num = 0
-    benchmark = PrimeVulBenchmark()
-
     
-    while tqdm(test_case_num < total_test_case_num):
+    while test_case_num < total_test_case_num:
     
         function_body = benchmark.get_random_function()
         
@@ -29,17 +21,15 @@ def test(total_test_case_num = 2):
         
         if return_code != 0:
             continue
-
-        # benchmark.compile_code()
         
         if return_code != 0:
             continue
 
-        benchmark.receive_prediction(0)
+        prediction = pipeline.predict(function_body)
+        benchmark.receive_prediction(prediction)
         
         test_case_num += 1
 
-    pprint(benchmark.get_results())
+    benchmark.get_results()
     
     
-test()

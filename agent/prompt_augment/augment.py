@@ -6,7 +6,7 @@ from langchain_core.messages.base import BaseMessage
 class PromptAugmenter(ABC):
 
     @abstractmethod
-    def augment(self, code : str, file_path : str, code_context : str = "", vulnerability_context : str = "") -> List[BaseMessage]:
+    def augment(self, code : str) -> List[BaseMessage]:
         '''
         Provides the code context with snippet extraction
 

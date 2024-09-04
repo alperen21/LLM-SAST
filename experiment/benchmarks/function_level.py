@@ -7,60 +7,11 @@ import json
 from config import Config   
 import subprocess
 
-class JulietBenchmark():
-    def __init__(self):
-        self.juliet_path = Config["juliet_path"]
-        self.labeled_functions = self.__get_labeled_functions()
-        self.index = 0
-        
-    def __extract_functions(self, vulnerable_functions = True):
-        with open(os.path.join(self.juliet_path, "main.cpp"), 'r') as file:
-            content = file.read()
-        
-        signifier = 'OMITBAD' if vulnerable_functions else 'OMITGOOD'
-
-        # Regular expression to match function calls within the OMITGOOD block, excluding printLine
-        pattern = re.compile(f"#ifndef {signifier}\s*(.*?)\s*#endif \/\* {signifier} \*\/", re.DOTALL)
-        match = pattern.search(content)
-
-        if match:
-            block = match.group(1)
-            # Extract function calls, exclude printLine
-            function_calls = re.findall(r'Calling (CWE.*);"', block)
-            # Remove duplicates and return the function names
-            return function_calls
-        else:
-            return []
-    
-    def __get_labeled_functions(self):
-        
-        vulnerable = self.__extract_functions(vulnerable_functions=True)
-        non_vulnerable = self.__extract_functions(vulnerable_functions=False)
-        
-        
-        
-        vulnerable = [(func, "vulnerable") for func in vulnerable]
-        non_vulnerable = [(func, "not vulnerable") for func in non_vulnerable] #TODO: Change with enum
-        
-        
-        
-        labeled_functions = vulnerable + non_vulnerable
-        random.shuffle(labeled_functions)
-        
-        return labeled_functions
-    
-    def get_random_function(self):
-        random_function = self.labeled_functions[self.index]
-        
-        self.index += 1
-        
-        return random_function
-
-
 class PrimeVulBenchmark:
     
     def __init__(self):
         self.index = -1
+        self.result_dir = "PrimeVul"
         self.results = {
             1: { # ground truth / label
                  1: dict(), # prediction to CWE mappings
@@ -194,11 +145,11 @@ class PrimeVulBenchmark:
     
     def get_results(self):
         # Dump self.results into a JSON file
-        with open('results.json', 'w') as file:
+        with open(os.path.join(self.result_dir, 'results.json'), 'w') as file:
             json.dump(self.results, file)
         
         # Dump self.verbose_results into a JSON file
-        with open('verbose_results.json', 'w') as file:
+        with open(os.path.join(self.result_dir, 'verbose_results.json'), 'w') as file:
             json.dump(self.verbose_results, file)
         
         

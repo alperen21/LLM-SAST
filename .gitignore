@@ -3,7 +3,7 @@ agent/rag/resources/*
 myenv/*
 *sarif
 demo/*
-test.py
 database/*
 demo2
 **/__pycache__/
+*log
