@@ -6,3 +6,4 @@ demo/*
 test.py
 database/*
 demo2
+**/__pycache__/

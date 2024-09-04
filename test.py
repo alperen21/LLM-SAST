@@ -1,24 +1,45 @@
-from pprint import pprint 
-mystr = """
+from experiment.benchmarks.function_level import PrimeVulBenchmark
+from config import Config
+from experiment.util import RipgrepFunctionFinder
+from pprint import pprint
+from tqdm import tqdm
 
-Based on the code provided and the SAST results, it seems that the function `CWE190_Integer_Overflow__int64_t_rand_add_01_bad` is vulnerable to an integer overflow issue. The potential flaw lies in adding 1 to the `data` variable, which could cause an overflow. This vulnerability could lead to unexpected behavior or security risks in the program.
+def test(total_test_case_num = 2):
+    
+    test_case_num = 0
+    benchmark = PrimeVulBenchmark()
 
-Therefore, the analysis would be as follows:
+    
+    while tqdm(test_case_num < total_test_case_num):
+    
+        function_body = benchmark.get_random_function()
+        
+        if function_body is None:
+            print("No more functions to test left.")
+            break
 
-***
-file_path -> CWE190_Integer_Overflow__int64_t_rand_add_01.c, 
+        benchmark.clean_test_directory()
 
-function_name -> CWE190_Integer_Overflow__int64_t_rand_add_01_bad, 
+        return_code = benchmark.clone_repository()
+        
+        if return_code != 0:
+            continue
 
-decision -> @@Vulnerable@@ 
-***
+        return_code = benchmark.checkout_commit()
+        
+        if return_code != 0:
+            continue
 
-It is important to address this vulnerability to ensure the security and integrity of the code.
+        # benchmark.compile_code()
+        
+        if return_code != 0:
+            continue
 
-"""
+        benchmark.receive_prediction(0)
+        
+        test_case_num += 1
 
-
-mylist = mystr.split("***")[1].split("\n")
-mylist = [elem for elem in mylist if elem != '']
-
-print(mylist)
+    pprint(benchmark.get_results())
+    
+    
+test()
