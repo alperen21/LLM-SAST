@@ -71,9 +71,6 @@ class PrimeVulBenchmark:
             return None
         
         function_body = random_function["func"]
-        label = random_function["target"]
-        project_name = random_function["project"]
-        commit_id = random_function["commit_id"]  
         
         
         return function_body

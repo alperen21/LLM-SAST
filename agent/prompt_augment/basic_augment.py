@@ -12,8 +12,12 @@ class BasicAugmenter(PromptAugmenter):
         You are a security engineer.\n
         You have been tasked with reviewing the following code snippet for security vulnerabilities.\n
 
-        ### Code:
+
+        ### Code: \n
+
+        ```c
         {code}
+        ```
         
         If you are not sure, you can execute any of the tools provided to help you make a decision such as SAST tools\n
         Make note that the output of SAST tools may not always be correct.\n

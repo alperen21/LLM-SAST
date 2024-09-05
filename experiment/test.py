@@ -1,4 +1,4 @@
-def function_level_test(pipeline, benchmark, total_test_case_num = 2):
+def function_level_test(pipeline, benchmark, total_test_case_num = 1):
     
     test_case_num = 0
     
@@ -31,5 +31,7 @@ def function_level_test(pipeline, benchmark, total_test_case_num = 2):
         test_case_num += 1
 
     benchmark.get_results()
+
+    print(pipeline.get_tokens_used())
     
     

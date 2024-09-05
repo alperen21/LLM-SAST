@@ -1,6 +1,7 @@
 from experiment.test import function_level_test
 from experiment.pipelines.function_level.agent_to_sast import AgentToSast
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from sast.tools import execute_codeql
 from langchain.tools import Tool
 from experiment.benchmarks.function_level import PrimeVulBenchmark
@@ -45,9 +46,10 @@ def main():
         codeql_tool,
         decision
     ]
+
     augmenter = BasicAugmenter()
     
-    pipeline = AgentToSast(llm, tools, augmenter)
+    pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmark()
     
     function_level_test(pipeline, benchmark)
