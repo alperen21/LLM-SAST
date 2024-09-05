@@ -21,14 +21,12 @@ def make_decision(input_str) -> None:
     Returns:
         None
     """
-    if "vulnerable" in input_str.lower():
+    if "@@vulnerable@@" in input_str.lower():
         print("Vulnerable")
     else:
         print("Not Vulnerable")
 
-
-def main():
-    
+def llm_only_experiment():
     llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
     
     codeql_tool = Tool(
@@ -53,7 +51,42 @@ def main():
     pipeline = LLMOnly(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmark(output_identifier='llm_only')
     
-    function_level_test(pipeline, benchmark)
+    function_level_test(pipeline, benchmark, total_test_case_num=100)
+
+
+def llm_to_sast_experiment():
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ]
+
+    augmenter = BasicAugmenter()
+    
+    pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmark(output_identifier='agent_to_sast')
+    
+    function_level_test(pipeline, benchmark, total_test_case_num=100)
+
+def main():
+
+    llm_only_experiment()
+    llm_to_sast_experiment()
+    
+
 
 if __name__ == "__main__":
     main()
