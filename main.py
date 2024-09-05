@@ -1,11 +1,12 @@
 from experiment.test import function_level_test
 from experiment.pipelines.function_level.agent_to_sast import AgentToSast
+from experiment.pipelines.function_level.llm_only import LLMOnly # type: ignore
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from sast.tools import execute_codeql
 from langchain.tools import Tool
 from experiment.benchmarks.function_level import PrimeVulBenchmark
-from agent.prompt_augment.basic_augment import BasicAugmenter
+from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter
 from langchain_core.tools import tool
 
 @tool
@@ -49,8 +50,8 @@ def main():
 
     augmenter = BasicAugmenter()
     
-    pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmark()
+    pipeline = LLMOnly(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmark(output_identifier='llm_only')
     
     function_level_test(pipeline, benchmark)
 

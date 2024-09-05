@@ -46,3 +46,45 @@ class BasicAugmenter(PromptAugmenter):
 
 
         return prompt
+    
+
+class BasicNoToolAugmenter(PromptAugmenter):
+    def __init__(self):
+        super().__init__()
+        
+        template_string = """
+        ### Task:
+        You are a security engineer.\n
+        You have been tasked with reviewing the following code snippet for security vulnerabilities.\n
+
+
+        ### Code: \n
+
+        ```c
+        {code}
+        ```
+
+        When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
+        """
+        
+        
+        self.prompt_template = ChatPromptTemplate.from_template(template_string)
+
+    
+    
+    def augment(self, code : str) -> List[BaseMessage]:
+        '''
+        Provides the code context with snippet extraction
+
+        Args:
+            prompt       (str)               : Prompt that will be augmented
+
+        Returns:
+            string : the augmented prompt
+        '''
+        prompt = self.prompt_template.format_messages(
+            code = code,
+        )
+
+
+        return prompt

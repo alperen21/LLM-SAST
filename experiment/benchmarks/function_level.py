@@ -9,9 +9,9 @@ import subprocess
 
 class PrimeVulBenchmark:
     
-    def __init__(self):
+    def __init__(self, output_identifier = ''):
         self.index = -1
-        self.result_dir = "PrimeVul"
+        self.result_dir = os.path.join("PrimeVul", output_identifier)
         self.results = {
             1: { # ground truth / label
                  1: dict(), # prediction to CWE mappings
