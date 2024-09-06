@@ -26,7 +26,7 @@ def make_decision(input_str) -> None:
     else:
         print("Not Vulnerable")
 
-def llm_only_experiment():
+def llm_only_experiment(total_test_case_num):
     llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
     
     codeql_tool = Tool(
@@ -51,10 +51,10 @@ def llm_only_experiment():
     pipeline = LLMOnly(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmark(output_identifier='llm_only')
     
-    function_level_test(pipeline, benchmark, total_test_case_num=100)
+    function_level_test(pipeline, benchmark, total_test_case_num=total_test_case_num)
 
 
-def llm_to_sast_experiment():
+def llm_to_sast_experiment(total_test_case_num):
     llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
     
     codeql_tool = Tool(
@@ -79,12 +79,14 @@ def llm_to_sast_experiment():
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmark(output_identifier='agent_to_sast')
     
-    function_level_test(pipeline, benchmark, total_test_case_num=100)
+    function_level_test(pipeline, benchmark, total_test_case_num=total_test_case_num, clone_repo=True)
 
 def main():
 
-    llm_only_experiment()
-    llm_to_sast_experiment()
+    total_test_case_num = 10
+    
+    llm_only_experiment(total_test_case_num)
+    llm_to_sast_experiment(total_test_case_num)
     
 
 

@@ -162,7 +162,6 @@ class PrimeVulBenchmark:
         
         label = int(self.data[self.index]["target"])
 
-        print(label, self.index)
         cwe = str(self.data[self.index].get("cwe", ""))
         
         self.results[label][prediction][cwe] = self.results[label][prediction].get(cwe, 0) + 1

@@ -25,7 +25,7 @@ def function_level_test(pipeline, benchmark, clone_repo = False, total_test_case
             if return_code != 0:
                 continue
 
-        prediction = 0#pipeline.predict(function_body)
+        prediction = pipeline.predict(function_body)
         benchmark.receive_prediction(prediction)
         
         test_case_num += 1
