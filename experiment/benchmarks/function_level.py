@@ -45,10 +45,36 @@ class PrimeVulBenchmark:
         with open(jsonl_file, 'r') as file:
             for line in file:
                 # Parse the JSON line into a dictionary
-                self.data.append(json.loads(line))
-    
+                self.data.append(json.loads(line)) 
+        
+        self.balance_targets()
+
+
     def get_data_size(self):
         return len(self.data)
+    
+    def balance_targets(self):
+        random.seed(42)
+        # Separate objects by target value
+        target_0 = [obj for obj in self.data if obj.get('target') == 0]
+        target_1 = [obj for obj in self.data if obj.get('target') == 1]
+
+        # Determine the smaller group size
+        smaller_size = min(len(target_0), len(target_1))
+
+        # Shuffle both groups to randomize the selection
+        random.shuffle(target_0)
+        random.shuffle(target_1)
+
+        # Select the number of items from each group equal to the smaller size
+        balanced_data = target_0[:smaller_size] + target_1[:smaller_size]
+
+        # Shuffle the balanced data
+        random.shuffle(balanced_data)
+
+        self.data = balanced_data
+
+
     
     def extract_unique_projects(self):
         unique_projects = set()
@@ -134,8 +160,10 @@ class PrimeVulBenchmark:
 
     def receive_prediction(self, prediction):
         
-        label = self.data[self.index]["target"]
-        cwe = self.data[self.index].get("cwe", "")
+        label = int(self.data[self.index]["target"])
+
+        print(label, self.index)
+        cwe = str(self.data[self.index].get("cwe", ""))
         
         self.results[label][prediction][cwe] = self.results[label][prediction].get(cwe, 0) + 1
         self.verbose_results[label][prediction].append(self.index)
