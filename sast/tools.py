@@ -50,7 +50,7 @@ def execute_codeql(input_str) -> None:
     database_path = os.path.join(source_root, "codeql-db")
     results_path = os.path.join(source_root, "results.sarif")
     
-    result = codeQL.execute(
+    _, result = codeQL.execute(
         source_root=source_root,
         database_path=database_path,
         results_path=results_path

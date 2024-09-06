@@ -180,4 +180,11 @@ class PrimeVulBenchmark:
         with open(os.path.join(self.result_dir, 'verbose_results.json'), 'w') as file:
             json.dump(self.verbose_results, file)
         
+    
+    def get_corresponding_repo(self):
+        
+        project_name = self.data[self.index]["project"] 
+        repo_link = self.project_mappings[project_name]
+
+        return repo_link
         

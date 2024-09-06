@@ -122,9 +122,10 @@ class CodeQL(SAST):
             command = f"codeql database analyze '{database_path}' --format=sarif-latest --output={results_path}"
 
             print('executing:', command)
-            subprocess.run(command, shell=True)
+            p = subprocess.run(command, shell=True)
             print('===========================')
             
-            return self.__read_sarif(results_path)
+            return (p.returncode, self.__read_sarif(results_path))
         except Exception as e:
             print("Error happened during CodeQL execution") #TODO: some projects don't compile with CodeQL, need to remove them from the dataset
+            return (-1 , None)

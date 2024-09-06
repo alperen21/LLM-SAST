@@ -34,7 +34,7 @@ class LLMOnly:
         else:
             response = self.agent.invoke(augmented_prompt)
 
-
+        print(response.content, '\n')
         if "@@vulnerable@@" in response.content.lower():
             print('vulnerable')
             return 1
