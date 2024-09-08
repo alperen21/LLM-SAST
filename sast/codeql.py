@@ -3,13 +3,15 @@ import subprocess
 import sys
 import json
 import os
+from config import Config
 import shutil
+import experiment.benchmarks.function_level as function_level
 
 class CodeQL(SAST):
     def __init__(self) -> None:
         super().__init__()
     
-    def __read_sarif(self, results_path):
+    def read_sarif(self, results_path):
         with open(results_path, 'r') as sarif_file:
             sarif_data = json.load(sarif_file)
 
@@ -125,7 +127,23 @@ class CodeQL(SAST):
             p = subprocess.run(command, shell=True)
             print('===========================')
             
-            return (p.returncode, self.__read_sarif(results_path))
+            return (p.returncode, self.read_sarif(results_path))
         except Exception as e:
             print("Error happened during CodeQL execution") #TODO: some projects don't compile with CodeQL, need to remove them from the dataset
             return (-1 , None)
+        
+        
+class CodeQLDummy(CodeQL):
+    def __init__(self) -> None:
+        super().__init__()
+    
+    def execute(self, **kwargs):
+        commit = function_level.commit
+        project = function_level.project
+        
+        results_sarif = os.path.join(Config["dummy_codeql_results"], f"test_{project}_{commit}.sarif")
+        results = self.read_sarif(results_sarif)
+        
+        print(results)
+        
+        return (0, results)

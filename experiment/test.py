@@ -14,8 +14,9 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
             print("No more functions to test left.")
             break
 
-        benchmark.clean_test_directory()
+        
         if clone_repo:
+            benchmark.clean_test_directory()
             return_code = benchmark.clone_repository()
             
             if return_code != 0:

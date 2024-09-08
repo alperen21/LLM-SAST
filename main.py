@@ -3,9 +3,9 @@ from experiment.pipelines.function_level.agent_to_sast import AgentToSast
 from experiment.pipelines.function_level.llm_only import LLMOnly # type: ignore
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
-from sast.tools import execute_codeql
+from sast.tools import execute_dummy_codeql
 from langchain.tools import Tool
-from experiment.benchmarks.function_level import PrimeVulBenchmark
+from experiment.benchmarks.function_level import PrimeVulBenchmarkDummy
 from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter
 from langchain_core.tools import tool
 from experiment.validity import CodeQLValidityChecker, ValidityChecker
@@ -33,7 +33,7 @@ def llm_only_experiment(total_test_case_num):
     
     codeql_tool = Tool(
                 name="Execute the Static Application Security Testing",
-                func=execute_codeql,
+                func=execute_dummy_codeql,
                 description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
             )
     
@@ -51,18 +51,18 @@ def llm_only_experiment(total_test_case_num):
     augmenter = BasicAugmenter()
     
     pipeline = LLMOnly(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmark(output_identifier='llm_only')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='llm_only')
     
     function_level_test(pipeline, benchmark, validity_checker=validityChecker, total_test_case_num=total_test_case_num)
 
 
 def llm_to_sast_experiment(total_test_case_num):
     llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
-    validityChecker = CodeQLValidityChecker()
+    validityChecker = ValidityChecker()
 
     codeql_tool = Tool(
                 name="Execute the Static Application Security Testing",
-                func=execute_codeql,
+                func=execute_dummy_codeql,
                 description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
             )
     
@@ -80,9 +80,9 @@ def llm_to_sast_experiment(total_test_case_num):
     augmenter = BasicAugmenter()
     
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmark(output_identifier='agent_to_sast')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast')
     
-    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
 
 def main():
 
