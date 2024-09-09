@@ -1,3 +1,15 @@
+import os
+
+# Specify the directory containing the .sarif files
+directory = './codeql_results'
+hash_codes = []
+# Iterate through all files in the directory
+for filename in os.listdir(directory):
+    if filename.endswith('.sarif'):
+        # Extract the hash code between _ and .sarif
+        hash_code = filename.split('_')[-1].split('.sarif')[0]
+        hash_codes.append(hash_code)        
+        hash_codes
 Config = {
     "source_root" :"./demo",
     "database_path" : "/Users/alperen/Projects/LLM-SAST-Benchmark/test/codeql-db",
@@ -6,5 +18,5 @@ Config = {
     "primevul_path" : "/Users/alperen/Projects/LLM-SAST-Benchmark/PrimeVul_Data",
     "test_path" : "/Users/alperen/Projects/LLM-SAST-Benchmark/test",
     "dummy_codeql_results": "./codeql_results",
-    "dummy_codeql_commits" : ["46a8443f76cec4b41ec736eca396984c74664f84", "4_971773f1fae600074b46ef64f3ca1f76c227985f", "a685e3332f61cd4e59324bf3f669d36973d64270", "1e56bda9048a9625bce6e660938c834c5c15b07d"]
+    "dummy_codeql_commits" : hash_codes
 }
