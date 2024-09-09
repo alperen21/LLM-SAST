@@ -87,14 +87,21 @@ class PrimeVulBenchmark:
     def get_random_function(self):
         
         self.index += 1
+        
+        
+        if self.index >= len(self.data):
+            return None
+        
         random_function = self.data[self.index]
         
         while (random_function["project"] not in self.project_mappings):
             self.index += 1
+            
+            if self.index >= len(self.data):
+                return None
+            
             random_function = self.data[self.index]
 
-        if self.index >= len(self.data):
-            return None
         
         function_body = random_function["func"]
         
@@ -183,7 +190,10 @@ class PrimeVulBenchmark:
     
     def get_corresponding_repo(self):
         
-        project_name = self.data[self.index]["project"] 
+        if self.index >= len(self.data):
+            return None
+        
+        project_name = self.data[self.index]["project"]
         repo_link = self.project_mappings[project_name]
 
         return repo_link
@@ -198,8 +208,11 @@ class PrimeVulBenchmarkDummy(PrimeVulBenchmark):
         
         
         result = super().get_random_function()
-        while self.data[self.index]["commit_id"] not in Config["dummy_codeql_commits"]:
+        while (self.data[self.index]["commit_id"] not in Config["dummy_codeql_commits"]):
             result = super().get_random_function()
+            
+            if result is None:
+                return None
         
         commit = self.data[self.index]["commit_id"]
         project = self.data[self.index]["project"]
