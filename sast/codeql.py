@@ -8,10 +8,25 @@ import shutil
 import experiment.benchmarks.function_level as function_level
 
 class CodeQL(SAST):
+    """
+    Python Class wrapper to execute CodeQL
+    """
     def __init__(self) -> None:
         super().__init__()
     
-    def read_sarif(self, results_path):
+    def read_sarif(self, results_path : str) -> list[dict]:
+        """
+        Args:
+            results_path (str): what is the path of results.sarif (or anything analogous with change in config file)
+
+        Returns:
+            list:   Returns a simplified summary since the results.sarif file prior to processing is very long. 
+                    It is a list of results, each result being a dictionary object.
+                    Each dictionary object has two keys, tool_info and results_info
+                    tool_info contains the name of the tool and the version
+                    results_info contains rule_id, message, severity and a list containing the location
+        """
+        #TODO: simplify this further, LLMs are more likely to hallucinate when presented with too much irrelevant information
         with open(results_path, 'r') as sarif_file:
             sarif_data = json.load(sarif_file)
 
@@ -112,6 +127,12 @@ class CodeQL(SAST):
 
     
     def execute(self, **kwargs):
+        """
+        Executes CodeQL
+
+        Returns:
+            (tuple): returns (return code, processed sarif results)
+        """
 
         source_root = kwargs['source_root']
         database_path = kwargs['database_path']
@@ -134,11 +155,22 @@ class CodeQL(SAST):
         
         
 class CodeQLDummy(CodeQL):
+    """
+    A class created for faster experiments. 
+    CodeQL takes a while to execute, especially for large codebases
+    This class has exactly the same interface as CodeQL and inherits from it, 
+    however it overrides the execute method to return pre-prepared results
+    """
     def __init__(self) -> None:
         super().__init__()
     
-    def execute(self, **kwargs):
-        commit = function_level.commit
+    def execute(self, **kwargs): #TODO: change **kwargs
+        """
+        Simulates execution of CodeQL by accessing tracked commit and project strings to match a sarif file and then processes the contents of the file and returns them
+        Returns:
+            (tuple): returns (return code, processed sarif results)
+        """
+        commit = function_level.commit #TODO: maybe create a shared state instead?
         project = function_level.project
         
         results_sarif = os.path.join(Config["dummy_codeql_results"], f"test_{project}_{commit}.sarif")

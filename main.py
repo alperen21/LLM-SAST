@@ -11,7 +11,7 @@ from langchain_core.tools import tool
 from experiment.validity import CodeQLValidityChecker, ValidityChecker
 
 @tool
-def make_decision(input_str) -> None:
+def make_decision(input_str) -> None: #TODO: remove and check if it changes the results
     """
     When you are ready to make decision whether or not the code snippet is vulnerable or not.
     Invoke this function to make the decision
@@ -88,8 +88,8 @@ def main():
 
     total_test_case_num = 100
 
-    # llm_only_experiment(total_test_case_num)
-    llm_to_sast_experiment(total_test_case_num)
+    llm_only_experiment(total_test_case_num)
+    # llm_to_sast_experiment(total_test_case_num)
     
 
 
