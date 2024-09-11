@@ -1,12 +1,17 @@
 from langchain.prompts import ChatPromptTemplate
+from agent.abstract import Agent
 
-class FeedBackAgent:
+class FeedBackAgent(Agent):
     def __init__(self, llm, llm_type, augmenter = None, max_feedback_loop = 5): #TODO: create a class that inherits from llm and returns llm_type
+        super().__init__(llm_type)
         self.llm = llm
         self.augmenter = augmenter
         self.llm_type = llm_type
         self.given_feedback_count = 0
         self.max_feedback_loop = max_feedback_loop
+    
+    def call_llm(self, prompt):
+        return self.llm.invoke(prompt)
     
     def is_further_refinement_needed(self, analysis : str):
         
@@ -36,8 +41,8 @@ class FeedBackAgent:
             """
             
         self.prompt_template = ChatPromptTemplate.from_template(template_string)
-        response = self.llm.invoke(self.prompt_template.format_messages(analysis = analysis))
-        
+        response = self.invoke_agent(self.prompt_template.format_messages(analysis = analysis))
+
         print(response.content)
         
         return response.content.strip().lower() == "yes"

@@ -1,7 +1,8 @@
 from langchain.prompts import ChatPromptTemplate
-
-class AnalysisAgent: #TODO: Create an abstract agent class that returns used tokens and total chain invocations
+from agent.abstract import Agent
+class AnalysisAgent(Agent):
     def __init__(self, llm, llm_type, augmenter = None): #TODO: create a class that inherits from llm and returns llm_type
+        super().__init__(llm_type)
         self.llm = llm
         self.augmenter = augmenter
         self.llm_type = llm_type
@@ -11,6 +12,9 @@ class AnalysisAgent: #TODO: Create an abstract agent class that returns used tok
     
     def set_code(self, code):
         self.code = code
+        
+    def call_llm(self, prompt):
+        return self.llm.invoke(prompt)
         
     def __set_analysis(self, analysis):
         print(analysis)
@@ -48,8 +52,9 @@ class AnalysisAgent: #TODO: Create an abstract agent class that returns used tok
                 code = self.code,
             )
         
-        response = self.llm.invoke(prompt)
+        response = self.invoke_agent(prompt)
         self.__set_analysis(response.content)
+    
     
     def get_analysis(self):
         return f"""

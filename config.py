@@ -19,7 +19,8 @@ Config = {
     "primevul_path" : "/Users/alperen/Projects/LLM-SAST-Benchmark/PrimeVul_Data",
     "test_path" : "/Users/alperen/Projects/LLM-SAST-Benchmark/test",
     "dummy_codeql_results": "./codeql_results",
-    "dummy_codeql_commits" : hash_codes
+    "dummy_codeql_commits" : hash_codes,
+    "max_feedback_loop" : 5
 }
 
 

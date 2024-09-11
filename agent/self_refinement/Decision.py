@@ -2,17 +2,17 @@
 
 from langchain.prompts import ChatPromptTemplate
 from langchain.agents import initialize_agent, AgentType
-from langchain.callbacks import get_openai_callback #TODO: Code duplication! This is also present in experiment/pipelines/function_level/agent_to_sast.py
+from agent.abstract import Agent
 
-class DecisionAgent:
+class DecisionAgent(Agent):
     def __init__(self, llm, llm_type, tools, augmenter = None): #TODO: create a class that inherits from llm and returns llm_type
-        self.llm = llm
+        super().__init__(llm_type)
         self.augmenter = augmenter
         self.llm_type = llm_type
         self.tools = tools
         
         
-        self.agent = initialize_agent(
+        self.llm = initialize_agent(
             tools=tools,  # List of tools the agent can use
             llm=llm,  # The language model
             agent_type=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,  # Choose the type of agent
@@ -46,6 +46,9 @@ class DecisionAgent:
         
         self.prompt_template = ChatPromptTemplate.from_template(template_string)
     
+    def call_llm(self, prompt):
+        return self.llm.invoke(prompt)
+    
     def predict(self, function_body : str, analysis : str) -> int:
         
         prompt = self.prompt_template.format_messages(
@@ -53,7 +56,7 @@ class DecisionAgent:
                 analysis = analysis
         )
         
-        response = self.agent.invoke(prompt)
+        response = self.invoke_agent(prompt)
 
         
         if self.augmenter is not None:

@@ -1,6 +1,7 @@
 from experiment.test import function_level_test
 from experiment.pipelines.function_level.agent_to_sast import AgentToSast
 from experiment.pipelines.function_level.llm_only import LLMOnly # type: ignore
+from experiment.pipelines.function_level.self_refinement import SelfRefiningAgents
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from sast.tools import execute_dummy_codeql
@@ -85,12 +86,39 @@ def llm_to_sast_experiment(total_test_case_num):
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
 
+def self_refine_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+    
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ]
+    pipeline = SelfRefiningAgents(llm, tools, None, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='self_refine')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
+
+
 def main():
 
-    total_test_case_num = 100
+    total_test_case_num = 1
 
-    llm_to_sast_experiment(total_test_case_num)
-    llm_only_experiment(total_test_case_num)
+    # llm_to_sast_experiment(total_test_case_num)
+    # llm_only_experiment(total_test_case_num)
+    self_refine_experiment(total_test_case_num)
     
 
 

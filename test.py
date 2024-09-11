@@ -52,6 +52,9 @@ print("="*100)
 print()
 
 refinement_needed = feedback_agent.is_further_refinement_needed(analysis)
+
+print(feedback_agent.get_tokens_used())
+input()
 print("="*100)
 print()
 
