@@ -26,6 +26,7 @@ class LLMOnly:
 
         augmented_prompt = self.augmenter.augment(function_body)
 
+        print(augmented_prompt[0].content)
 
         if self.llm_type == 'gpt':
             with get_openai_callback() as cb:

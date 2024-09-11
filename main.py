@@ -7,7 +7,7 @@ from langchain_ollama import ChatOllama
 from sast.tools import execute_dummy_codeql
 from langchain.tools import Tool
 from experiment.benchmarks.function_level import PrimeVulBenchmarkDummy
-from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter, CoTAugmenter
+from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter, CoTAugmenter, AnalogicalReasoningAugmenter
 from langchain_core.tools import tool
 from experiment.validity import CodeQLValidityChecker, ValidityChecker
 
@@ -50,7 +50,7 @@ def llm_only_experiment(total_test_case_num):
         decision
     ]
 
-    augmenter = BasicAugmenter()
+    augmenter = BasicNoToolAugmenter()
     
     pipeline = LLMOnly(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmarkDummy(output_identifier='llm_only')
@@ -138,12 +138,43 @@ def chain_of_thought_experiment(total_test_case_num):
     benchmark = PrimeVulBenchmarkDummy(output_identifier='CoT')
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
+    
+    
+def analogical_reasoning_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ]
+
+    augmenter = AnalogicalReasoningAugmenter()
+    
+    pipeline = LLMOnly(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='analogical_reasoning')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
+#FIXME: Code Duplication
 
 def main():
 
-    total_test_case_num = 100
+    total_test_case_num = 1
 
-    chain_of_thought_experiment(total_test_case_num)
+    # analogical_reasoning_experiment(total_test_case_num)
+    # chain_of_thought_experiment(total_test_case_num)
     # llm_to_sast_experiment(total_test_case_num)
     # llm_only_experiment(total_test_case_num)
     # self_refine_experiment(total_test_case_num)
