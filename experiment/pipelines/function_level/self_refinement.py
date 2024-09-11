@@ -20,6 +20,7 @@ class SelfRefiningAgents:
         self.decision_agent = DecisionAgent(llm, llm_type, tools)
         
         self.augmenter = augmenter
+    
         
     def predict(self, function_body : str) -> int:
         """
@@ -58,7 +59,7 @@ class SelfRefiningAgents:
             refinement_needed = self.feedback_agent.is_further_refinement_needed(analysis)
         
         print("amount of given feedbacks:", self.feedback_agent.given_feedback_count)
-        
+        self.feedback_agent.reset()
         
         response = self.decision_agent.predict(function_body, analysis)
         

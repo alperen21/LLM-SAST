@@ -10,6 +10,9 @@ class FeedBackAgent(Agent):
         self.given_feedback_count = 0
         self.max_feedback_loop = max_feedback_loop
     
+    def reset(self):
+        self.given_feedback_count = 0
+        
     def call_llm(self, prompt):
         return self.llm.invoke(prompt)
     
