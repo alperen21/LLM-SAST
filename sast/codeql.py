@@ -14,7 +14,7 @@ class CodeQL(SAST):
     def __init__(self) -> None:
         super().__init__()
     
-    def read_sarif(self, results_path : str) -> list[dict]:
+    def read_sarif(self, results_path : str):
         """
         Args:
             results_path (str): what is the path of results.sarif (or anything analogous with change in config file)
@@ -150,8 +150,7 @@ class CodeQL(SAST):
             
             return (p.returncode, self.read_sarif(results_path))
         except Exception as e:
-            print("Error happened during CodeQL execution") #TODO: some projects don't compile with CodeQL, need to remove them from the dataset
-            return (-1 , None)
+            print("Error happened during CodeQL execution")
         
         
 class CodeQLDummy(CodeQL):

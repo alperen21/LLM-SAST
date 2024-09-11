@@ -30,7 +30,7 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
             if return_code != 0:
                 continue
 
-        if not validity_checker.check_validity(repo_link, function_body):
+        if not validity_checker.check_validity(repo_link):
             continue
 
 

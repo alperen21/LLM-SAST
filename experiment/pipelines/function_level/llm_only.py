@@ -32,7 +32,7 @@ class LLMOnly:
                 self.tokens_used += cb.total_tokens
         
         else:
-            response = self.agent.invoke(augmented_prompt)
+            response = self.llm.invoke(augmented_prompt)
 
         print(response.content, '\n')
         if "@@vulnerable@@" in response.content.lower():

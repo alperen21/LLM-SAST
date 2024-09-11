@@ -10,6 +10,7 @@ from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmen
 from langchain_core.tools import tool
 from experiment.validity import CodeQLValidityChecker, ValidityChecker
 
+
 @tool
 def make_decision(input_str) -> None: #TODO: remove and check if it changes the results
     """
@@ -89,7 +90,7 @@ def main():
     total_test_case_num = 100
 
     llm_only_experiment(total_test_case_num)
-    # llm_to_sast_experiment(total_test_case_num)
+    llm_to_sast_experiment(total_test_case_num)
     
 
 
