@@ -6,6 +6,7 @@ from pprint import pprint
 import json
 from config import Config   
 import subprocess
+from state import SharedState
 
 class PrimeVulBenchmark:
     
@@ -197,16 +198,10 @@ class PrimeVulBenchmark:
         repo_link = self.project_mappings[project_name]
 
         return repo_link
-
-
-commit = str()
-project = str()
+    
 class PrimeVulBenchmarkDummy(PrimeVulBenchmark):
     def get_random_function(self):
-        global commit
-        global project 
-        
-        
+        state = SharedState()
         result = super().get_random_function()
         while (self.data[self.index]["commit_id"] not in Config["dummy_codeql_commits"]):
             result = super().get_random_function()
@@ -216,5 +211,9 @@ class PrimeVulBenchmarkDummy(PrimeVulBenchmark):
         
         commit = self.data[self.index]["commit_id"]
         project = self.data[self.index]["project"]
+        
+        state.commit = commit
+        state.project = project
+        
         
         return result

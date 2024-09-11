@@ -5,7 +5,8 @@ import json
 import os
 from config import Config
 import shutil
-import experiment.benchmarks.function_level as function_level
+from state import SharedState
+
 
 class CodeQL(SAST):
     """
@@ -169,8 +170,9 @@ class CodeQLDummy(CodeQL):
         Returns:
             (tuple): returns (return code, processed sarif results)
         """
-        commit = function_level.commit #TODO: maybe create a shared state instead?
-        project = function_level.project
+        state = SharedState()
+        commit = state.commit 
+        project = state.project
         
         results_sarif = os.path.join(Config["dummy_codeql_results"], f"test_{project}_{commit}.sarif")
         results = self.read_sarif(results_sarif)

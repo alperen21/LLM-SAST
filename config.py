@@ -21,3 +21,5 @@ Config = {
     "dummy_codeql_results": "./codeql_results",
     "dummy_codeql_commits" : hash_codes
 }
+
+

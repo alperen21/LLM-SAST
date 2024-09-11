@@ -89,8 +89,8 @@ def main():
 
     total_test_case_num = 100
 
-    llm_only_experiment(total_test_case_num)
     llm_to_sast_experiment(total_test_case_num)
+    llm_only_experiment(total_test_case_num)
     
 
 
