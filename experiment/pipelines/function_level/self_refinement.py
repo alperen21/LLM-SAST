@@ -83,7 +83,7 @@ class NoSASTSelfRefiningAgents:
     Pipeline that creates a ReAct agent with SAST tools introduced as LangChain tools and also a self-refine mechanism
     """
     #TODO: Change Naming to LLM2SAST to better reflect the nature of the pipeline
-    def __init__(self, llm, tools, augmenter, llm_type):
+    def __init__(self, llm, augmenter, llm_type):
         
         self.analysis_agent = AnalysisAgent(llm, llm_type)
         self.feedback_agent = FeedBackAgent(llm, llm_type, max_feedback_loop = Config["max_feedback_loop"])
