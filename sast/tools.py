@@ -9,7 +9,7 @@ codeQL = CodeQL()
 codeQLDummy = CodeQLDummy()
 
 @tool
-def execute_dummy_codeql(input_str) -> None:
+def execute_dummy_codeql(function_body) -> None:
     """
     Executes the CodeQL static analysis workflow on a C++ project.
 
@@ -56,7 +56,7 @@ def execute_dummy_codeql(input_str) -> None:
         results_path=results_path
     )
     
-    print(result)
+    codeQLDummy.extract_relevant_results(result, function_body)
     
     return result
 

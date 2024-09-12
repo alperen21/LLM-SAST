@@ -186,7 +186,7 @@ def self_refine_no_sast_experiment(total_test_case_num):
     
 def main():
 
-    total_test_case_num = 1
+    total_test_case_num = 100
 
     try:
 
@@ -196,7 +196,7 @@ def main():
         # chain_of_thought_experiment(total_test_case_num)
         # print('cot experiment done')
 
-        # llm_to_sast_experiment(total_test_case_num)
+        llm_to_sast_experiment(total_test_case_num)
         # print('llm to sast  experiment done')
 
         # llm_only_experiment(total_test_case_num)
@@ -205,8 +205,8 @@ def main():
         # self_refine_experiment(total_test_case_num)
         # print('self refine experiment done')
         
-        self_refine_no_sast_experiment(total_test_case_num)
-        print('self refine no sast experiment done')
+        #self_refine_no_sast_experiment(total_test_case_num)
+        #print('self refine no sast experiment done')
     
     except Exception as e:
         state = SharedState()

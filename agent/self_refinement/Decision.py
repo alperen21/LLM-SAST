@@ -119,7 +119,7 @@ class DecisionAgentNoTool(Agent):
         if self.augmenter is not None:
             prompt = self.augmenter.augment(function_body)
 
-        if "@@vulnerable@@" in response["output"].lower():
+        if "@@vulnerable@@" in response.content.lower():
             print('vulnerable')
             return 1
         else:
