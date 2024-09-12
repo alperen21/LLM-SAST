@@ -1,7 +1,7 @@
 from experiment.test import function_level_test
 from experiment.pipelines.function_level.agent_to_sast import AgentToSast
 from experiment.pipelines.function_level.llm_only import LLMOnly # type: ignore
-from experiment.pipelines.function_level.self_refinement import SelfRefiningAgents
+from experiment.pipelines.function_level.self_refinement import SelfRefiningAgents, NoSASTSelfRefiningAgents
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from sast.tools import execute_dummy_codeql
@@ -170,6 +170,20 @@ def analogical_reasoning_experiment(total_test_case_num):
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
 #FIXME: Code Duplication
 
+
+def self_refine_no_sast_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+
+
+    augmenter = BasicNoToolAugmenter()
+    
+    pipeline = NoSASTSelfRefiningAgents(llm, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='self_refine_no_sast')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
+    
+    
 def main():
 
     total_test_case_num = 100
@@ -190,6 +204,9 @@ def main():
 
         self_refine_experiment(total_test_case_num)
         print('self refine experiment done')
+        
+        self_refine_no_sast_experiment(total_test_case_num)
+        print('self refine no sast experiment done')
     
     except Exception:
         state = SharedState()
