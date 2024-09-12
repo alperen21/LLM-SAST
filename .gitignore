@@ -8,5 +8,5 @@ demo2
 **/__pycache__/
 *log
 config.py
-PrimeVul/*
+PrimeVul*/*
 test.py

@@ -190,23 +190,23 @@ def main():
 
     try:
 
-        # analogical_reasoning_experiment(total_test_case_num)
-        # print('analogical reasoning experiment done')
+        analogical_reasoning_experiment(total_test_case_num)
+        print('analogical reasoning experiment done')
 
-        # chain_of_thought_experiment(total_test_case_num)
-        # print('cot experiment done')
+        chain_of_thought_experiment(total_test_case_num)
+        print('cot experiment done')
 
         llm_to_sast_experiment(total_test_case_num)
-        # print('llm to sast  experiment done')
+        print('llm to sast  experiment done')
 
-        # llm_only_experiment(total_test_case_num)
-        # print('llm only  experiment done')
+        llm_only_experiment(total_test_case_num)
+        print('llm only  experiment done')
 
-        # self_refine_experiment(total_test_case_num)
-        # print('self refine experiment done')
+        self_refine_experiment(total_test_case_num)
+        print('self refine experiment done')
         
-        #self_refine_no_sast_experiment(total_test_case_num)
-        #print('self refine no sast experiment done')
+        self_refine_no_sast_experiment(total_test_case_num)
+        print('self refine no sast experiment done')
     
     except Exception as e:
         state = SharedState()
