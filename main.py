@@ -10,7 +10,8 @@ from experiment.benchmarks.function_level import PrimeVulBenchmarkDummy
 from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter, CoTAugmenter, AnalogicalReasoningAugmenter
 from langchain_core.tools import tool
 from experiment.validity import CodeQLValidityChecker, ValidityChecker
-
+from state import SharedState
+import sys
 
 @tool
 def make_decision(input_str) -> None: #TODO: remove and check if it changes the results
@@ -171,14 +172,31 @@ def analogical_reasoning_experiment(total_test_case_num):
 
 def main():
 
-    total_test_case_num = 1
+    total_test_case_num = 100
 
-    # analogical_reasoning_experiment(total_test_case_num)
-    # chain_of_thought_experiment(total_test_case_num)
-    # llm_to_sast_experiment(total_test_case_num)
-    # llm_only_experiment(total_test_case_num)
-    # self_refine_experiment(total_test_case_num)
+    try:
+
+        analogical_reasoning_experiment(total_test_case_num)
+        print('analogical reasoning experiment done')
+
+        chain_of_thought_experiment(total_test_case_num)
+        print('cot experiment done')
+
+        llm_to_sast_experiment(total_test_case_num)
+        print('llm to sast  experiment done')
+
+        llm_only_experiment(total_test_case_num)
+        print('llm only  experiment done')
+
+        self_refine_experiment(total_test_case_num)
+        print('self refine experiment done')
     
+    except Exception:
+        state = SharedState()
+        print(f'error occured with: {state.project} - {state.commit}')
+        sys.exit(1)
+
+        
 
 
 if __name__ == "__main__":

@@ -41,7 +41,7 @@ class AnalysisAgent(Agent):
                 {code}
                 ```
                 
-                Make an argument why the code is vulnerable or not vulnerable.\n
+                Make a succint and precise argument within a paragraph why the code is vulnerable or not vulnerable.\n
                 Do not talk about hypothetical scenarios or what the code could do. \n
                 Only talk about whether or not the code snippet is vulnerable or not, not that it "could be" vulnerable or not.\n
                 """ + self.no_followup_action
@@ -78,7 +78,7 @@ class AnalysisAgent(Agent):
             ### Feedback: \n
             {feedback}
             
-            Refine the analysis based on the feedback. \n
+            Refine the analysis based on the feedback. Make a succint and precise argument within a paragraph \n
             """ + self.no_followup_action
             
         self.prompt_template = ChatPromptTemplate.from_template(template_string)
