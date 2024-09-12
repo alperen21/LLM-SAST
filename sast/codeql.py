@@ -152,6 +152,21 @@ class CodeQL(SAST):
             return (p.returncode, self.read_sarif(results_path))
         except Exception as e:
             print("Error happened during CodeQL execution")
+    
+    def extract_relevant_results(self,  processed_codeql_results, function_body):
+        relevant_results = list()
+        
+        for result in processed_codeql_results:
+            code_line = result["line"]
+            message = result["message"]
+            
+            if code_line.replace('\n', '').replace(' ', '') in function_body.replace('\n', '').replace(' ', ''):
+                relevant_results.append({
+                    "code_line": code_line,
+                    "message": message
+                })
+        
+        return relevant_results
         
         
 class CodeQLDummy(CodeQL):
@@ -175,8 +190,8 @@ class CodeQLDummy(CodeQL):
         project = state.project
         
         results_sarif = os.path.join(Config["dummy_codeql_results"], f"test_{project}_{commit}.sarif")
-        results = self.read_sarif(results_sarif)
         
-        print(results)
+        with open(results_sarif, 'r') as sarif_file:
+            results = json.load(sarif_file)
         
         return (0, results)
