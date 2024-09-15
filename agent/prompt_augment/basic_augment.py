@@ -64,7 +64,7 @@ class BasicNoToolAugmenter(PromptAugmenter):
         {code}
         ```
 
-        When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
+        When you have made your decision explain your reasoning and then write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
         """
         
         
@@ -107,7 +107,7 @@ class CoTAugmenter(PromptAugmenter): #FIXME: Code duplication
         {code}
         ```
 
-        When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
+        When you have made your decision explain your reasoning and then write @@Vulnerable@@ or @@Not Vulnerable@@.\n
         
         Please think step by step to solve this problem before providing the final answer
         """
@@ -152,7 +152,7 @@ class AnalogicalReasoningAugmenter(PromptAugmenter): #FIXME: Code duplication
         {code}
         ```
 
-        When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
+        When you have made your decision explain your reasoning and then either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
         
         Recall a related problem and then solve this one
         """
@@ -196,7 +196,7 @@ class BasicNoToolAugmenter(PromptAugmenter):
         {code}
         ```
 
-        When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
+        When you have made your decision, explain your reasoning and then write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
         """
         
         

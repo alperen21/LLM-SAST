@@ -166,7 +166,7 @@ class CodeQL(SAST):
                     "message": message
                 })
         
-        return relevant_results
+        return relevant_results #TODO: do it for the real codeql
         
         
 class CodeQLDummy(CodeQL):

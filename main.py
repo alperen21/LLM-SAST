@@ -1,6 +1,7 @@
 from experiment.test import function_level_test
 from experiment.pipelines.function_level.agent_to_sast import AgentToSast
 from experiment.pipelines.function_level.llm_only import LLMOnly # type: ignore
+from experiment.pipelines.function_level.sampling import SamplingPipeline
 from experiment.pipelines.function_level.self_refinement import SelfRefiningAgents, NoSASTSelfRefiningAgents
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
@@ -183,6 +184,35 @@ def self_refine_no_sast_experiment(total_test_case_num):
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
     
+
+def sampling_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 1)
+    validityChecker = ValidityChecker()
+    
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ]
+
+    augmenter = BasicNoToolAugmenter()
+    
+    pipeline = SamplingPipeline(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='sampling')
+    
+    function_level_test(pipeline, benchmark, validity_checker=validityChecker, total_test_case_num=total_test_case_num)
+
     
 def main():
 
@@ -190,6 +220,9 @@ def main():
 
     try:
 
+        sampling_experiment(total_test_case_num)
+        print('sampling experiment done')
+        
         analogical_reasoning_experiment(total_test_case_num)
         print('analogical reasoning experiment done')
 
@@ -207,6 +240,8 @@ def main():
         
         self_refine_no_sast_experiment(total_test_case_num)
         print('self refine no sast experiment done')
+        
+
     
     except Exception as e:
         state = SharedState()

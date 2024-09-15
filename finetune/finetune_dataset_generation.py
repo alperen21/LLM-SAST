@@ -27,11 +27,28 @@ class DatasetGenerator:
             print(response)
             
             if prediction == label:
-                json_obj = {
-                    "function": func,
-                    "label": label,
-                    "response": response.content
+                # json_obj = {
+                #     "function": func,
+                #     "label": label,
+                #     "response": response.content
+                # }
+                
+                system = {
+                    "role" : "system",
+                    "content" : "You are a security engineer.\n You have been tasked with reviewing the following code snippet for security vulnerabilities.\n         When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n"
                 }
+                
+                user = {
+                    "role" : "user",
+                    "content" : func
+                }
+                
+                assistant = {
+                    "role" : "assistant",
+                    "content" : response.content
+                }
+                
+                json_obj = {"messages" : [system, user, assistant]}
 
                 # Append to the JSON lines file
                 with open(self.output_file, 'a') as file:

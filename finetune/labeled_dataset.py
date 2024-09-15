@@ -12,7 +12,7 @@ class PrimeVul(Dataset):
         super().__init__()
         
         primevul_path = Config['primevul_path']
-        self.benchmark_path = os.path.join(primevul_path, 'primevul_train.jsonl')
+        self.benchmark_path = os.path.join(primevul_path, 'primevul_test.jsonl')
 
     def get_next(self):
         with open(self.benchmark_path, 'r') as file:
