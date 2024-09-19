@@ -64,8 +64,9 @@ class BasicAugmenterWithContext(PromptAugmenter):
         ```
         
         If you are not sure, you can execute any of the tools provided to help you make a decision such as SAST tools\n
-        Make note that the output of SAST tools may not always be correct.\n
-        You can also use the provided tools to search for more context about the function
+        Make note that the output of SAST tools may not always be correct. Be sure to get enough context and don't heavily rely on SAST tools\n
+        You can also use the provided tools to search for more context about the function. \n
+        
         
         When you have made your decision explain your reasoning and write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
         """

@@ -1,11 +1,10 @@
-from code_context.cscope import CScope
+
 from langchain_core.tools import tool
 import subprocess
 from config import Config
 import os
 from langchain.agents import Tool
 
-cScope = CScope()
 
 # Define the tools
 @tool("find_c_symbol", return_direct=True)
@@ -19,7 +18,9 @@ def find_c_symbol(symbol: str) -> str:
     Returns:
         str: The output from cscope containing all references to the symbol.
     """
-    return cScope.execute(0, symbol)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -0 {symbol}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
 @tool("find_global_definition", return_direct=True)
@@ -33,7 +34,10 @@ def find_global_definition(symbol: str) -> str:
     Returns:
         str: The output from cscope containing the definition of the symbol.
     """
-    return cScope.execute(1 ,symbol)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -1 {symbol}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 
 @tool("find_functions_called_by", return_direct=True)
@@ -47,7 +51,10 @@ def find_functions_called_by(function_name: str) -> str:
     Returns:
         str: The output from cscope containing functions called by the specified function.
     """
-    return cScope.execute(1 ,function_name)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -2 {function_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 @tool("find_functions_calling", return_direct=True)
 def find_functions_calling(function_name: str) -> str:
@@ -60,7 +67,10 @@ def find_functions_calling(function_name: str) -> str:
     Returns:
         str: The output from cscope containing functions that call the specified function.
     """
-    return cScope.execute(3 ,function_name)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -3 {function_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 @tool("find_text_string", return_direct=True)
 def find_text_string(text: str) -> str:
@@ -73,7 +83,10 @@ def find_text_string(text: str) -> str:
     Returns:
         str: The output from cscope containing all occurrences of the text string.
     """
-    return cScope.execute(4 ,text)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -4 {text}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 @tool("find_egrep_pattern", return_direct=True)
 def find_egrep_pattern(pattern: str) -> str:
@@ -86,7 +99,10 @@ def find_egrep_pattern(pattern: str) -> str:
     Returns:
         str: The output from cscope containing all lines matching the pattern.
     """
-    return cScope.execute(6 , pattern)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -6 {pattern}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 @tool("find_file", return_direct=True)
 def find_file(file_name: str) -> str:
@@ -99,7 +115,10 @@ def find_file(file_name: str) -> str:
     Returns:
         str: The output from cscope containing the location of the file.
     """
-    return cScope.execute(7 ,file_name)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -7 {file_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 @tool("find_including_files", return_direct=True)
 def find_including_files(file_name: str) -> str:
@@ -112,7 +131,10 @@ def find_including_files(file_name: str) -> str:
     Returns:
         str: The output from cscope containing files that include the specified file.
     """
-    return cScope.execute(8 , file_name)
+    subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
+    subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    return subprocess.run(f'cscope -dL -8 {file_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+
 
 @tool("readfile", return_direct=True)
 def readfile(filename: str) -> str:
@@ -126,9 +148,10 @@ def readfile(filename: str) -> str:
         str: The contents of the file.
     """
     return subprocess.run(
-        f'cd {Config["test_path"]} && cat {filename}',
+        f'cat {filename}',
         shell=True,
-        capture_output=True
+        capture_output=True,
+        cwd=Config["test_path"]
     ).stdout
 
 tools = [

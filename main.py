@@ -314,17 +314,14 @@ def llm_to_sast_experiment_with_context(total_test_case_num):
         description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
     )
     
-    tools = [
-        codeql_tool,
-        decision
-    ] + code_context_tools.tools
+    tools =  code_context_tools.tools
 
     augmenter = BasicAugmenterWithContext()
     
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_context')
     
-    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
 
 def main():
 
