@@ -286,22 +286,53 @@ def react_sast_code_context_experiment(total_test_case_num):
         description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
     )
     
-    tools = code_context_tools.tools
+    tools = [
+        codeql_tool,
+        decision
+    ]
 
-    augmenter = BasicAugmenterWithContext()
+    augmenter = BasicAugmenter()
     
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
     benchmark = PrimeVulBenchmarkDummy(output_identifier='code_context')
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
 
+def llm_to_sast_experiment_with_context(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ] + code_context_tools.tools
+
+    augmenter = BasicAugmenterWithContext()
+    
+    pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_context')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
+
 def main():
 
-    total_test_case_num = 1
+    total_test_case_num = 100
 
     try:
 
-        react_sast_code_context_experiment(total_test_case_num)
+        llm_to_sast_experiment_with_context(total_test_case_num)
         # sampling_experiment(total_test_case_num)
         # print('sampling experiment done')
         
