@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 
+
 codeQL = CodeQL()
 codeQLDummy = CodeQLDummy()
 

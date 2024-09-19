@@ -7,3 +7,5 @@ class SharedState:
             cls._instance.project = str()
             cls._instance.commit = str()
         return cls._instance
+    
+    

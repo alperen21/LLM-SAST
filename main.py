@@ -1,18 +1,19 @@
 from experiment.test import function_level_test
 from experiment.pipelines.function_level.agent_to_sast import AgentToSast
 from experiment.pipelines.function_level.llm_only import LLMOnly # type: ignore
-from experiment.pipelines.function_level.sampling import SamplingPipeline
+from experiment.pipelines.function_level.sampling import SamplingPipeline, SamplingReActPipeline
 from experiment.pipelines.function_level.self_refinement import SelfRefiningAgents, NoSASTSelfRefiningAgents
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from sast.tools import execute_dummy_codeql
 from langchain.tools import Tool
 from experiment.benchmarks.function_level import PrimeVulBenchmarkDummy
-from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter, CoTAugmenter, AnalogicalReasoningAugmenter
+from agent.prompt_augment.basic_augment import BasicAugmenter, BasicNoToolAugmenter, CoTAugmenter, AnalogicalReasoningAugmenter, BasicAugmenterWithContext
 from langchain_core.tools import tool
 from experiment.validity import CodeQLValidityChecker, ValidityChecker
 from state import SharedState
 import sys
+import code_context.tools as code_context_tools
 
 @tool
 def make_decision(input_str) -> None: #TODO: remove and check if it changes the results
@@ -209,37 +210,122 @@ def sampling_experiment(total_test_case_num):
     augmenter = BasicNoToolAugmenter()
     
     pipeline = SamplingPipeline(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmarkDummy(output_identifier='sampling')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='sampling_100')
     
     function_level_test(pipeline, benchmark, validity_checker=validityChecker, total_test_case_num=total_test_case_num)
 
+def sampling_react_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 1)
+    validityChecker = ValidityChecker()
     
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ]
+
+    augmenter = BasicAugmenter()
+    
+    pipeline = SamplingReActPipeline(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='sampling_100_react_')
+    
+    function_level_test(pipeline, benchmark, validity_checker=validityChecker, total_test_case_num=total_test_case_num)
+
+def sampling_react_cot_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 1)
+    validityChecker = ValidityChecker()
+    
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = [
+        codeql_tool,
+        decision
+    ]
+
+    augmenter = CoTAugmenter()
+    
+    pipeline = SamplingReActPipeline(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='sampling_50_react_cot')
+    
+    function_level_test(pipeline, benchmark, validity_checker=validityChecker, total_test_case_num=total_test_case_num)
+
+def react_sast_code_context_experiment(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools = code_context_tools.tools
+
+    augmenter = BasicAugmenterWithContext()
+    
+    pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='code_context')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
+
 def main():
 
-    total_test_case_num = 100
+    total_test_case_num = 1
 
     try:
 
-        sampling_experiment(total_test_case_num)
-        print('sampling experiment done')
+        react_sast_code_context_experiment(total_test_case_num)
+        # sampling_experiment(total_test_case_num)
+        # print('sampling experiment done')
         
-        analogical_reasoning_experiment(total_test_case_num)
-        print('analogical reasoning experiment done')
-
-        chain_of_thought_experiment(total_test_case_num)
-        print('cot experiment done')
-
-        llm_to_sast_experiment(total_test_case_num)
-        print('llm to sast  experiment done')
-
-        llm_only_experiment(total_test_case_num)
-        print('llm only  experiment done')
-
-        self_refine_experiment(total_test_case_num)
-        print('self refine experiment done')
+        # llm_only_experiment(total_test_case_num)
+        # print('llm only  experiment done')
         
-        self_refine_no_sast_experiment(total_test_case_num)
-        print('self refine no sast experiment done')
+        # analogical_reasoning_experiment(total_test_case_num)
+        # print('analogical reasoning experiment done')
+
+        # chain_of_thought_experiment(total_test_case_num)
+        # print('cot experiment done')
+
+        # llm_to_sast_experiment(total_test_case_num)
+        # print('llm to sast  experiment done')
+
+        # self_refine_experiment(total_test_case_num)
+        # print('self refine experiment done')
+        
+        # self_refine_no_sast_experiment(total_test_case_num)
+        # print('self refine no sast experiment done')
+        
+        # sampling_react_cot_experiment(total_test_case_num)
+        
+        # sampling_react_experiment(total_test_case_num)
         
 
     
