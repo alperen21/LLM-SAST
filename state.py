@@ -6,6 +6,7 @@ class SharedState:
             cls._instance = super(SharedState, cls).__new__(cls)
             cls._instance.project = str()
             cls._instance.commit = str()
+            cls._instance.function_name = str()
         return cls._instance
     
     

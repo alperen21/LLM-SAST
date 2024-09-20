@@ -4,6 +4,7 @@ import subprocess
 from config import Config
 import os
 from langchain.agents import Tool
+from state import SharedState
 
 
 # Define the tools
@@ -34,6 +35,8 @@ def find_global_definition(symbol: str) -> str:
     Returns:
         str: The output from cscope containing the definition of the symbol.
     """
+    state = SharedState()
+    state.function_name = symbol
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
     return subprocess.run(f'cscope -dL -1 {symbol}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
@@ -53,6 +56,8 @@ def find_functions_called_by(function_name: str) -> str:
     """
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    state = SharedState()
+    state.function_name = function_name
     return subprocess.run(f'cscope -dL -2 {function_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
@@ -69,6 +74,8 @@ def find_functions_calling(function_name: str) -> str:
     """
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    state = SharedState()
+    state.function_name = function_name
     return subprocess.run(f'cscope -dL -3 {function_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
@@ -117,6 +124,7 @@ def find_file(file_name: str) -> str:
     """
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+
     return subprocess.run(f'cscope -dL -7 {file_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
@@ -139,14 +147,17 @@ def find_including_files(file_name: str) -> str:
 @tool("readfile", return_direct=True)
 def readfile(filename: str) -> str:
     """
-    Read the contents of a specified file.
+    Read the contents of a specified file along with a function
 
     Args:
         filename (str): The name of the file to read.
+        function_name (str): The name of the function to extract from the file.
+
 
     Returns:
         str: The contents of the file.
     """
+    state = SharedState()
     return subprocess.run(
         f'cat {filename}',
         shell=True,
