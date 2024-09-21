@@ -4,8 +4,58 @@ import subprocess
 from config import Config
 import os
 from langchain.agents import Tool
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import OpenAIEmbeddings
+import numpy as np
 from state import SharedState
+import re
 
+def extract_c_function(file_path: str, function_name: str) -> str:
+    """
+    Extracts the implementation of a specified function from a C source file using regex.
+
+    Args:
+        file_path (str): Path to the C source file.
+        function_name (str): Name of the function to extract.
+
+    Returns:
+        str: The source code of the specified function, including its signature and body.
+             Returns an empty string if the function is not found.
+    """
+    # Read the C source file
+    with open(file_path, 'r') as file:
+        source_code = file.read()
+
+    # Define the regex pattern with the specific function name
+    pattern = rf'''
+        (?P<signature>
+            \b
+            (?:static\s+|inline\s+)?          # Optional qualifiers
+            [\w\*\s]+?                         # Return type (non-greedy)
+            \b{re.escape(function_name)}\b     # Function name
+            \s*\([^)]*\)                       # Parameters
+        )
+        \s*\{{                                 # Opening brace
+        (?P<body>
+            (?:[^{{}}]|{{[^{{}}]*}})*         # Function body
+        )
+        \}}                                     # Closing brace
+    '''
+
+    # Compile the regex with verbose and dotall flags
+    regex = re.compile(pattern, re.VERBOSE | re.DOTALL)
+
+    # Search for the pattern in the source code
+    match = regex.search(source_code)
+
+    if match:
+        signature = match.group('signature').strip()
+        body = match.group('body').strip()
+        function_code = f"{signature} {{\n{body}\n}}"
+        return function_code
+    else:
+        print(f"Function '{function_name}' not found in {file_path}.")
+        return ""
 
 # Define the tools
 @tool("find_c_symbol", return_direct=True)
@@ -158,12 +208,13 @@ def readfile(filename: str) -> str:
         str: The contents of the file.
     """
     state = SharedState()
-    return subprocess.run(
-        f'cat {filename}',
-        shell=True,
-        capture_output=True,
-        cwd=Config["test_path"]
-    ).stdout
+    function_name = state.function_name
+
+    
+    return extract_c_function(
+        file_path = os.path.join(Config["test_path"], filename.replace("'", "")),
+        function_name=function_name
+    )
 
 tools = [
     Tool(
