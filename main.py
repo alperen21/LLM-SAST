@@ -314,7 +314,7 @@ def llm_to_sast_experiment_with_context(total_test_case_num):
         description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
     )
     
-    tools =  code_context_tools.tools
+    tools =  code_context_tools.tools + [decision, codeql_tool]
 
     augmenter = BasicAugmenterWithContext()
     

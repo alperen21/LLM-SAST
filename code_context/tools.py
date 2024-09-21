@@ -210,11 +210,14 @@ def readfile(filename: str) -> str:
     state = SharedState()
     function_name = state.function_name
 
-    
-    return extract_c_function(
-        file_path = os.path.join(Config["test_path"], filename.replace("'", "")),
-        function_name=function_name
-    )
+
+    try:
+        return extract_c_function(
+            file_path = os.path.join(Config["test_path"], filename.replace("'", "").strip()),
+            function_name=function_name
+        )
+    except Exception as e:
+        print(e)
 
 tools = [
     Tool(
