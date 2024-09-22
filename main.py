@@ -319,13 +319,13 @@ def llm_to_sast_experiment_with_context(total_test_case_num):
     augmenter = BasicAugmenterWithContext()
     
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_context')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_context1')
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
 
 def main():
 
-    total_test_case_num = 100
+    total_test_case_num = 1
 
     try:
 

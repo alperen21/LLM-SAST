@@ -57,7 +57,6 @@ def execute_dummy_codeql(function_body) -> None:
         results_path=results_path
     )
     
-    codeQLDummy.extract_relevant_results(result, function_body)
     
     return result
 
