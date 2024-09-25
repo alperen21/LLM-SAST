@@ -5,6 +5,7 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
     while test_case_num < total_test_case_num:
     
         function_body = benchmark.get_random_function()
+        
         repo_link = benchmark.get_corresponding_repo()
 
         print(repo_link)
@@ -33,10 +34,10 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
         if not validity_checker.check_validity(repo_link):
             continue
 
-
+        
         prediction = pipeline.predict(function_body)
         benchmark.receive_prediction(prediction)
-        
+        print("--->",benchmark.index, "prediction:", prediction)
         test_case_num += 1
 
     benchmark.get_results()

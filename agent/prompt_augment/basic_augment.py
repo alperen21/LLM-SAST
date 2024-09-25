@@ -223,7 +223,7 @@ class AnalogicalReasoningAugmenter(PromptAugmenter): #FIXME: Code duplication
 
 
         return prompt
-    
+
 
 class BasicNoToolAugmenter(PromptAugmenter):
     def __init__(self):

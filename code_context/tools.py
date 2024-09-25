@@ -58,7 +58,7 @@ def find_c_symbol(symbol: str) -> str:
     state.function_name = symbol
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
-    return subprocess.run(f'cscope -dL -0 {symbol}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+    return subprocess.run(f'cscope -dL -0 {symbol} | sed \'s/ .*//\' | sort -u', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
 @tool("find_global_definition", return_direct=True)

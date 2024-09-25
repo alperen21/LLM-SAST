@@ -14,6 +14,7 @@ from experiment.validity import CodeQLValidityChecker, ValidityChecker
 from state import SharedState
 import sys
 import code_context.tools as code_context_tools
+from experiment.pipelines.function_level.self_check import SelfCheck, SelfCheckSAST
 
 @tool
 def make_decision(input_str) -> None: #TODO: remove and check if it changes the results
@@ -271,7 +272,7 @@ def sampling_react_cot_experiment(total_test_case_num):
     function_level_test(pipeline, benchmark, validity_checker=validityChecker, total_test_case_num=total_test_case_num)
 
 def react_sast_code_context_experiment(total_test_case_num):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    llm = ChatOpenAI(model="ft:gpt-4o-mini-2024-07-18:personal:vulnerability-small:A7yzhzZs", temperature = 0)
     validityChecker = ValidityChecker()
 
     codeql_tool = Tool(
@@ -299,7 +300,7 @@ def react_sast_code_context_experiment(total_test_case_num):
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
 
 def llm_to_sast_experiment_with_context(total_test_case_num):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    llm = ChatOpenAI(model="gpt-4o", temperature = 0)
     validityChecker = ValidityChecker()
 
     codeql_tool = Tool(
@@ -319,17 +320,70 @@ def llm_to_sast_experiment_with_context(total_test_case_num):
     augmenter = BasicAugmenterWithContext()
     
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_context1')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_context4')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
+
+
+def selfcheck(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools =  code_context_tools.tools + [decision, codeql_tool]
+
+    augmenter = BasicAugmenterWithContext()
+    
+    pipeline = SelfCheck(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='self_check')
+    
+    function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
+
+def selfcheck_sast(total_test_case_num):
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    validityChecker = ValidityChecker()
+
+    codeql_tool = Tool(
+                name="Execute the Static Application Security Testing",
+                func=execute_dummy_codeql,
+                description="Executes the static application security testing tool to detect software vulnerabilities, you don't need to use this tool if you are already ready to make a decision about the code snippet"
+            )
+    
+    decision = Tool(
+        name="make_decision",
+        func=make_decision,
+        description="When you are ready to make decision whether or not the code snippet is vulnerable or not. Invoke this function to make the decision"
+    )
+    
+    tools =  code_context_tools.tools + [decision, codeql_tool]
+
+    augmenter = BasicAugmenterWithContext()
+    
+    pipeline = SelfCheckSAST(llm, tools, augmenter, 'gpt')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='self_check_sast')
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num, clone_repo=True)
 
 def main():
 
-    total_test_case_num = 1
+    total_test_case_num = 100
 
     try:
 
-        llm_to_sast_experiment_with_context(total_test_case_num)
+        selfcheck(total_test_case_num)
+        selfcheck_sast(total_test_case_num)
+        # llm_to_sast_experiment_with_context(total_test_case_num)
         # sampling_experiment(total_test_case_num)
         # print('sampling experiment done')
         

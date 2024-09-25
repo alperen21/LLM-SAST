@@ -168,12 +168,18 @@ class PrimeVulBenchmark:
 
     def receive_prediction(self, prediction):
         
-        label = int(self.data[self.index]["target"])
+        with open("res.txt", "a") as f:
+            
+            
+            label = int(self.data[self.index]["target"])
 
-        cwe = str(self.data[self.index].get("cwe", ""))
-        
-        self.results[label][prediction][cwe] = self.results[label][prediction].get(cwe, 0) + 1
-        self.verbose_results[label][prediction].append(self.index)
+            cwe = str(self.data[self.index].get("cwe", ""))
+            
+            self.results[label][prediction][cwe] = self.results[label][prediction].get(cwe, 0) + 1
+            self.verbose_results[label][prediction].append(self.index)
+            
+            f.write(f"index: {self.index}, \n{self.data[self.index]}")
+            f.write("\n===================================\n")
     
     def get_results(self):
         

@@ -11,3 +11,4 @@ config.py
 PrimeVul*/*
 test.py
 *jsonl
+res.txt
