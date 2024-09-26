@@ -95,7 +95,7 @@ def find_functions_called_by(function_name: str) -> str:
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
     state = SharedState()
     state.function_name = function_name
-    return subprocess.run(f'cscope -dL -2 {function_name}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+    return subprocess.run(f'cscope -dL -2 {function_name} | sed \'s/ .*//\' | sort -u', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
 @tool("find_functions_calling", return_direct=True)
@@ -129,8 +129,12 @@ def find_text_string(text: str) -> str:
     """
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
+    state = SharedState()
+    state.function_name = text
+    result = str(subprocess.run(f'cscope -dL -4 {text}', cwd=Config["test_path"], shell=True, capture_output=True).stdout)
     
-    return subprocess.run(f'cscope -dL -4 {text}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+    if len(result) >= 5 * 1000000:
+        return "the result is too long"
 
 
 @tool("find_egrep_pattern", return_direct=True)
@@ -146,7 +150,9 @@ def find_egrep_pattern(pattern: str) -> str:
     """
     subprocess.run('find . \( -name "*.c" -o -name "*.cpp" -o -name "*.h" \) > cscope.files', cwd=Config["test_path"], shell=True, capture_output=True)
     subprocess.run('cscope -b -q -k', cwd=Config["test_path"], shell=True, capture_output=True)
-    return subprocess.run(f'cscope -dL -6 {pattern}', cwd=Config["test_path"], shell=True, capture_output=True).stdout
+    state = SharedState()
+    state.function_name = pattern
+    return subprocess.run(f'cscope -dL -6 {pattern} | sed \'s/ .*//\' | sort -u', cwd=Config["test_path"], shell=True, capture_output=True).stdout
 
 
 @tool("find_file", return_direct=True)

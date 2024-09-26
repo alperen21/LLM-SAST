@@ -63,7 +63,7 @@ def llm_only_experiment(total_test_case_num):
 
 
 def llm_to_sast_experiment(total_test_case_num):
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature = 0)
+    llm = ChatOpenAI(model="gpt-4o", temperature = 0)
     validityChecker = ValidityChecker()
 
     codeql_tool = Tool(
@@ -86,7 +86,7 @@ def llm_to_sast_experiment(total_test_case_num):
     augmenter = BasicAugmenter()
     
     pipeline = AgentToSast(llm, tools, augmenter, 'gpt')
-    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast')
+    benchmark = PrimeVulBenchmarkDummy(output_identifier='agent_to_sast_4o')
     
     function_level_test(pipeline, benchmark, validity_checker = validityChecker, total_test_case_num=total_test_case_num)
 
@@ -381,7 +381,7 @@ def main():
 
     try:
 
-        selfcheck(total_test_case_num)
+        # selfcheck(total_test_case_num)
         selfcheck_sast(total_test_case_num)
         # llm_to_sast_experiment_with_context(total_test_case_num)
         # sampling_experiment(total_test_case_num)
