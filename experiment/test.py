@@ -37,11 +37,10 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
         
         prediction = pipeline.predict(function_body)
         benchmark.receive_prediction(prediction)
-        print("--->",benchmark.index, "prediction:", prediction)
         test_case_num += 1
 
     benchmark.get_results()
 
-    print(pipeline.get_tokens_used())
+    return pipeline.get_tokens_used()
     
     
