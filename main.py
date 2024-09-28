@@ -5,6 +5,7 @@ from experiment.pipelines.function_level.sampling import SamplingPipeline, Sampl
 from experiment.pipelines.function_level.self_refinement import SelfRefiningAgents, NoSASTSelfRefiningAgents
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
+from langchain_mistralai import ChatMistralAI
 from sast.tools import execute_dummy_codeql
 from langchain.tools import Tool
 from experiment.benchmarks.function_level import PrimeVulBenchmarkDummy
@@ -21,6 +22,7 @@ from state import SharedState
 import sys
 import code_context.tools as code_context_tools
 from experiment.pipelines.function_level.self_check import SelfCheck, SelfCheckSAST
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 @tool
@@ -614,26 +616,26 @@ def main():
 
     # Define LLM instances with desired models and temperatures
     llms = [
-        #ChatOpenAI(model="gpt-4o", temperature=0),
-        #ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        #ChatOpenAI(model="gpt-4o-mini", temperature=1),
+        ChatOpenAI(model="gpt-4o", temperature=0),
+        ChatOpenAI(model="gpt-4o-mini", temperature=0),
         ChatOllama(model="llama3.1", temperature=0),
-        #ChatOllama(model="llama3.1", temperature=1),
+        ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0),
+        ChatMistralAI(model="codestral-latest", temperature=0),
     ]
 
     # List of experiment functions
     experiments = [
-        #selfcheck,
-        #sampling_experiment,
-        #llm_only_experiment,
-        #analogical_reasoning_experiment,
-        #chain_of_thought_experiment,
+        selfcheck,
+        sampling_experiment,
+        llm_only_experiment,
+        analogical_reasoning_experiment,
+        chain_of_thought_experiment,
         #llm_to_sast_experiment,
         #self_refine_experiment,
         self_refine_no_sast_experiment,
-        react_code_context_experiment
-        #sampling_react_cot_experiment,
-        #sampling_react_experiment,
+        react_code_context_experiment,
+        sampling_react_cot_experiment,
+        sampling_react_experiment,
     ]
 
     try:
