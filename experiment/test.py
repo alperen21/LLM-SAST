@@ -6,10 +6,8 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
     
         function_body = benchmark.get_random_function()
         
-        repo_link = benchmark.get_corresponding_repo()
 
-        print(repo_link)
-
+        print(function_body)
         
         if function_body is None:
             print("No more functions to test left.")
@@ -17,6 +15,13 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
 
         
         if clone_repo:
+            
+            repo_link = benchmark.get_corresponding_repo()
+            
+            if not validity_checker.check_validity(repo_link):
+                continue
+
+            print(repo_link)
             benchmark.clean_test_directory()
             return_code = benchmark.clone_repository()
             
@@ -31,8 +36,7 @@ def function_level_test(pipeline, benchmark, validity_checker, clone_repo = Fals
             if return_code != 0:
                 continue
 
-        if not validity_checker.check_validity(repo_link):
-            continue
+        
 
         
         prediction = pipeline.predict(function_body)

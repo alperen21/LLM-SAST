@@ -8,6 +8,76 @@ from config import Config
 import subprocess
 from state import SharedState
 
+
+class CVEFixBenchmark:
+    def __init__(self, output_identifier = '', language = 'cpp', sampled = True) -> None:
+        self.index = -1
+        self.output_identifier = output_identifier
+        self.language = language
+        self.result_dir = os.path.join(f"CVEFix_{self.language}", output_identifier)
+        self.results = {
+            1: { # ground truth / label
+                 1: dict(), # prediction to CWE mappings
+                 0: dict()
+                },
+            0: {
+                    1: dict(),
+                    0: dict()
+            }
+        }
+        if sampled:
+            jsonl_file = os.path.join(Config["CVE_Fix_Path"], f"{self.language}_sample.jsonl")
+        else:
+            jsonl_file = os.path.join(Config["CVE_Fix_Path"], f"{self.language}.jsonl")
+            
+        self.data = []
+
+        # Open the JSONL file and read line by line
+        with open(jsonl_file, 'r') as file:
+            for line in file:
+                # Parse the JSON line into a dictionary
+                self.data.append(json.loads(line)) 
+        
+    def get_data_size(self):
+        return len(self.data)
+
+    def get_random_function(self):
+        self.index += 1
+        
+        if self.index >= len(self.data):
+            return None
+        
+        random_function = self.data[self.index]
+        
+        function_body = random_function["func"]
+        
+        return function_body
+
+    def receive_prediction(self, prediction):
+        
+        with open("res.txt", "a") as f:
+            
+            
+            label = int(self.data[self.index]["target"])
+
+            cwe = str(self.data[self.index].get("cwe", ""))
+            
+            self.results[label][prediction][cwe] = self.results[label][prediction].get(cwe, 0) + 1
+            
+            f.write(f"index: {self.index}, \n{self.data[self.index]}")
+            f.write("\n===================================\n") 
+    
+    def get_results(self):
+        
+        if not os.path.exists(self.result_dir):
+            os.makedirs(self.result_dir)
+            
+        # Dump self.results into a JSON file
+        with open(os.path.join(self.result_dir, 'results.json'), 'w') as file:
+            json.dump(self.results, file)
+        
+
+
 class PrimeVulBenchmark:
     
     def __init__(self, output_identifier = ''):

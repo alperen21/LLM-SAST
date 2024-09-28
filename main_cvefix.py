@@ -8,7 +8,7 @@ from langchain_ollama import ChatOllama
 from langchain_mistralai import ChatMistralAI
 from sast.tools import execute_dummy_codeql
 from langchain.tools import Tool
-from experiment.benchmarks.function_level import PrimeVulBenchmarkDummy, CVEFixBenchmark
+from experiment.benchmarks.function_level import CVEFixBenchmark
 from agent.prompt_augment.basic_augment import (
     BasicAugmenter,
     BasicNoToolAugmenter,
@@ -52,11 +52,15 @@ def get_model_identifier(llm):
         return f"gpt_{model_name}"
     elif isinstance(llm, ChatOllama):
         return f"ollama_{model_name}"
+    elif isinstance(llm, ChatGoogleGenerativeAI):
+        return f"google_genai_{model_name}"
+    elif isinstance(llm, ChatMistralAI):
+        return f"mistralai_{model_name}"
     else:
         return "unknown_model"
 
 
-def llm_only_experiment(total_test_case_num, llm):
+def llm_only_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -83,7 +87,7 @@ def llm_only_experiment(total_test_case_num, llm):
     augmenter = BasicNoToolAugmenter()
 
     pipeline = LLMOnly(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"llm_only_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"llm_only_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -100,7 +104,7 @@ def llm_only_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def llm_to_sast_experiment(total_test_case_num, llm):
+def llm_to_sast_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -127,7 +131,7 @@ def llm_to_sast_experiment(total_test_case_num, llm):
     augmenter = BasicAugmenter()
 
     pipeline = AgentToSast(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"agent_to_sast_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"agent_to_sast_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -144,7 +148,7 @@ def llm_to_sast_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def self_refine_experiment(total_test_case_num, llm):
+def self_refine_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -169,7 +173,7 @@ def self_refine_experiment(total_test_case_num, llm):
     tools = [codeql_tool, decision]
 
     pipeline = SelfRefiningAgents(llm, tools, None, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_refine_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"self_refine_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -186,7 +190,7 @@ def self_refine_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def chain_of_thought_experiment(total_test_case_num, llm):
+def chain_of_thought_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -213,7 +217,7 @@ def chain_of_thought_experiment(total_test_case_num, llm):
     augmenter = CoTAugmenter()
 
     pipeline = LLMOnly(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"CoT_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"CoT_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -230,7 +234,7 @@ def chain_of_thought_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def analogical_reasoning_experiment(total_test_case_num, llm):
+def analogical_reasoning_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -257,7 +261,7 @@ def analogical_reasoning_experiment(total_test_case_num, llm):
     augmenter = AnalogicalReasoningAugmenter()
 
     pipeline = LLMOnly(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"analogical_reasoning_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"analogical_reasoning_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -274,14 +278,14 @@ def analogical_reasoning_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def self_refine_no_sast_experiment(total_test_case_num, llm):
+def self_refine_no_sast_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
     augmenter = BasicNoToolAugmenter()
 
     pipeline = NoSASTSelfRefiningAgents(llm, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_refine_no_sast_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"self_refine_no_sast_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -298,7 +302,7 @@ def self_refine_no_sast_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def sampling_experiment(total_test_case_num, llm):
+def sampling_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -325,7 +329,7 @@ def sampling_experiment(total_test_case_num, llm):
     augmenter = BasicNoToolAugmenter()
 
     pipeline = SamplingPipeline(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"sampling_100_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"sampling_100_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -342,7 +346,7 @@ def sampling_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def sampling_react_experiment(total_test_case_num, llm):
+def sampling_react_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -369,7 +373,7 @@ def sampling_react_experiment(total_test_case_num, llm):
     augmenter = BasicAugmenter()
 
     pipeline = SamplingReActPipeline(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"sampling_100_react_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"sampling_100_react_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -386,7 +390,7 @@ def sampling_react_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def sampling_react_cot_experiment(total_test_case_num, llm):
+def sampling_react_cot_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -413,7 +417,7 @@ def sampling_react_cot_experiment(total_test_case_num, llm):
     augmenter = CoTAugmenter()
 
     pipeline = SamplingReActPipeline(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"sampling_50_react_cot_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"sampling_50_react_cot_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -430,7 +434,7 @@ def sampling_react_cot_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def react_code_context_experiment(total_test_case_num, llm):
+def react_code_context_experiment(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -457,7 +461,7 @@ def react_code_context_experiment(total_test_case_num, llm):
     augmenter = BasicAugmenter()
 
     pipeline = AgentToSast(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"code_context_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"code_context_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -475,7 +479,7 @@ def react_code_context_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def llm_to_sast_experiment_with_context(total_test_case_num, llm):
+def llm_to_sast_experiment_with_context(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -502,7 +506,7 @@ def llm_to_sast_experiment_with_context(total_test_case_num, llm):
     augmenter = BasicAugmenterWithContext()
 
     pipeline = AgentToSast(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"agent_to_sast_context_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"agent_to_sast_context_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -520,7 +524,7 @@ def llm_to_sast_experiment_with_context(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def selfcheck(total_test_case_num, llm):
+def selfcheck(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -547,7 +551,7 @@ def selfcheck(total_test_case_num, llm):
     augmenter = BasicAugmenterWithContext()
 
     pipeline = SelfCheck(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_check_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"self_check_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -565,7 +569,7 @@ def selfcheck(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def selfcheck_sast(total_test_case_num, llm):
+def selfcheck_sast(total_test_case_num, llm, language):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -592,7 +596,7 @@ def selfcheck_sast(total_test_case_num, llm):
     augmenter = BasicAugmenterWithContext()
 
     pipeline = SelfCheckSAST(llm, tools, augmenter, model_id)
-    benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_check_sast_{model_id}")
+    benchmark = CVEFixBenchmark(output_identifier=f"self_check_sast_{model_id}", language=language)
 
     function_level_test(
         pipeline,
@@ -614,6 +618,8 @@ def main():
 
     total_test_case_num = float("inf")
 
+    languages = ['python', 'cpp']
+
     # Define LLM instances with desired models and temperatures
     llms = [
         ChatOpenAI(model="gpt-4o", temperature=0),
@@ -630,8 +636,8 @@ def main():
         llm_only_experiment,
         analogical_reasoning_experiment,
         chain_of_thought_experiment,
-        #llm_to_sast_experiment,
-        #self_refine_experiment,
+        # llm_to_sast_experiment,
+        # self_refine_experiment,
         self_refine_no_sast_experiment,
         react_code_context_experiment,
         sampling_react_cot_experiment,
@@ -639,14 +645,16 @@ def main():
     ]
 
     try:
-        for llm in llms:
-            model_id = get_model_identifier(llm)
-            print(f"\nRunning experiments with LLM: {model_id}, temperature={llm.temperature}\n")
-            for experiment_func in experiments:
-                experiment_name = experiment_func.__name__
-                print(f"Starting experiment: {experiment_name} with LLM: {model_id}")
-                experiment_func(total_test_case_num, llm)
-                print(f"Experiment {experiment_name} with LLM {model_id} done")
+        for language in languages:
+            print(f"\n=== Running experiments for Language: {language.upper()} ===\n")
+            for llm in llms:
+                model_id = get_model_identifier(llm)
+                print(f"\nRunning experiments with LLM: {model_id}, temperature={llm.temperature}, language={language}\n")
+                for experiment_func in experiments:
+                    experiment_name = experiment_func.__name__
+                    print(f"Starting experiment: {experiment_name} with LLM: {model_id} and Language: {language}")
+                    experiment_func(total_test_case_num, llm, language)
+                    print(f"Experiment {experiment_name} with LLM {model_id} and Language {language} done\n")
     except Exception as e:
         state = SharedState()
         print(f"Error occurred with: {state.project} - {state.commit}")
