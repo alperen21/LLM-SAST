@@ -10,6 +10,8 @@ from langchain.memory import ConversationBufferMemory
 from langchain.callbacks import get_openai_callback
 from langchain_core.messages.base import BaseMessage
 from config import Config
+from agent.callback import get_token_usage_callback
+from transformers import GPT2TokenizerFast  # Replace with the correct tokenizer for your model
 
 
 
@@ -58,7 +60,11 @@ class SamplingPipeline:
                 self.tokens_used += cb.total_tokens
         
         else:
-            response = self.llm.invoke(augmented_prompt)
+            tokenizer = GPT2TokenizerFast.from_pretrained('gpt2') 
+            with get_token_usage_callback(tokenizer) as cb:
+                response = self.llm.invoke(augmented_prompt)
+                self.tokens_used += cb.total_tokens
+
 
         print(response.content, '\n')
         

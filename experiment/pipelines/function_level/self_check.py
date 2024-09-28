@@ -4,6 +4,8 @@ from langchain.callbacks import get_openai_callback
 from langchain.prompts import ChatPromptTemplate
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent, AgentType, tool
+from agent.callback import get_token_usage_callback
+from transformers import GPT2TokenizerFast 
 
 class SelfCheckPrompt:
     def __init__(self):
@@ -58,7 +60,11 @@ class SelfCheckSAST(AgentToSast):
                 response = self.agent.invoke(selfCheckPrompt_with_history)
                 self.tokens_used += cb.total_tokens
         else:
-            response = self.agent.invoke(augmented_prompt)
+            tokenizer = GPT2TokenizerFast.from_pretrained('gpt2') 
+            with get_token_usage_callback(tokenizer) as cb:
+                response = self.agent.invoke(augmented_prompt)
+                self.tokens_used += cb.total_tokens
+
         print(response)
         # Do not reset memory to preserve history between invocations
         if "@@vulnerable@@" in response["output"].lower():

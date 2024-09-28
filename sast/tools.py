@@ -57,7 +57,7 @@ def execute_dummy_codeql(function_body) -> None:
         results_path=results_path
     )
     
-    
+    result = codeQLDummy.extract_relevant_results(result, function_body)
     return result
 
 @tool
@@ -108,6 +108,6 @@ def execute_codeql(input_str) -> None:
         results_path=results_path
     )
     
-    print(result)
+    
     
     return result

@@ -1,4 +1,6 @@
 from langchain.callbacks import get_openai_callback
+from agent.callback import get_token_usage_callback
+from transformers import GPT2TokenizerFast  # Replace with the correct tokenizer for your model
 
 class Agent:
     def __init__(self, llm_type):
@@ -15,7 +17,14 @@ class Agent:
                 response = self.llm.invoke(prompt)
                 self.tokens_used += cb.total_tokens
                 self.total_chain_invocations += 1
-        
+  
+        else:
+            tokenizer = GPT2TokenizerFast.from_pretrained('gpt2') 
+            with get_token_usage_callback(tokenizer) as cb:
+                response = self.llm.invoke(prompt)
+                self.tokens_used += cb.total_tokens
+                self.total_chain_invocations += 1
+
         return response 
     
     

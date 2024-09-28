@@ -428,7 +428,7 @@ def sampling_react_cot_experiment(total_test_case_num, llm):
         f.write(str(tokens) + "\n")
 
 
-def react_sast_code_context_experiment(total_test_case_num, llm):
+def react_code_context_experiment(total_test_case_num, llm):
     validityChecker = ValidityChecker()
     model_id = get_model_identifier(llm)
 
@@ -450,7 +450,7 @@ def react_sast_code_context_experiment(total_test_case_num, llm):
         ),
     )
 
-    tools = code_context_tools.tools + [decision, codeql_tool]
+    tools = code_context_tools.tools + [decision,]
 
     augmenter = BasicAugmenter()
 
@@ -614,28 +614,26 @@ def main():
 
     # Define LLM instances with desired models and temperatures
     llms = [
-        ChatOpenAI(model="gpt-4o", temperature=0),
-        ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        ChatOpenAI(model="gpt-4o-mini", temperature=1),
-        ChatOllama(model="llama2", temperature=0),
-        ChatOllama(model="llama2", temperature=1),
+        #ChatOpenAI(model="gpt-4o", temperature=0),
+        #ChatOpenAI(model="gpt-4o-mini", temperature=0),
+        #ChatOpenAI(model="gpt-4o-mini", temperature=1),
+        ChatOllama(model="llama3.1", temperature=0),
+        #ChatOllama(model="llama3.1", temperature=1),
     ]
 
     # List of experiment functions
     experiments = [
-        selfcheck,
-        selfcheck_sast,
-        llm_to_sast_experiment_with_context,
-        sampling_experiment,
-        llm_only_experiment,
-        analogical_reasoning_experiment,
-        chain_of_thought_experiment,
-        llm_to_sast_experiment,
-        self_refine_experiment,
+        #selfcheck,
+        #sampling_experiment,
+        #llm_only_experiment,
+        #analogical_reasoning_experiment,
+        #chain_of_thought_experiment,
+        #llm_to_sast_experiment,
+        #self_refine_experiment,
         self_refine_no_sast_experiment,
-        sampling_react_cot_experiment,
-        sampling_react_experiment,
-        react_sast_code_context_experiment,
+        react_code_context_experiment
+        #sampling_react_cot_experiment,
+        #sampling_react_experiment,
     ]
 
     try:
