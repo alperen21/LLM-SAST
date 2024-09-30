@@ -22,7 +22,6 @@ from state import SharedState
 import sys
 import code_context.tools as code_context_tools
 from experiment.pipelines.function_level.self_check import SelfCheck, SelfCheckSAST
-from langchain_google_genai import ChatGoogleGenerativeAI
 
 
 @tool
@@ -49,11 +48,11 @@ def get_model_identifier(llm):
     else:
         model_name = "unknown_model"
     if isinstance(llm, ChatOpenAI):
-        return f"gpt_{model_name}"
+        return "gpt"
     elif isinstance(llm, ChatOllama):
         return f"ollama_{model_name}"
-    elif isinstance(llm, ChatGoogleGenerativeAI):
-        return f"google_genai_{model_name}"
+    # elif isinstance(llm, ChatGoogleGenerativeAI):
+    #     return f"google_genai_{model_name}"
     elif isinstance(llm, ChatMistralAI):
         return f"mistralai_{model_name}"
     else:
@@ -89,7 +88,7 @@ def llm_only_experiment(total_test_case_num, llm, language):
     pipeline = LLMOnly(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"llm_only_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -98,7 +97,6 @@ def llm_only_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"llm_only_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -133,7 +131,7 @@ def llm_to_sast_experiment(total_test_case_num, llm, language):
     pipeline = AgentToSast(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"agent_to_sast_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -142,7 +140,6 @@ def llm_to_sast_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"agent_to_sast_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -175,7 +172,7 @@ def self_refine_experiment(total_test_case_num, llm, language):
     pipeline = SelfRefiningAgents(llm, tools, None, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"self_refine_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -184,7 +181,6 @@ def self_refine_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_refine_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -219,7 +215,7 @@ def chain_of_thought_experiment(total_test_case_num, llm, language):
     pipeline = LLMOnly(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"CoT_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -228,7 +224,6 @@ def chain_of_thought_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"CoT_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -263,7 +258,7 @@ def analogical_reasoning_experiment(total_test_case_num, llm, language):
     pipeline = LLMOnly(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"analogical_reasoning_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -272,7 +267,6 @@ def analogical_reasoning_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"analogical_reasoning_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -287,7 +281,7 @@ def self_refine_no_sast_experiment(total_test_case_num, llm, language):
     pipeline = NoSASTSelfRefiningAgents(llm, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"self_refine_no_sast_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -296,7 +290,6 @@ def self_refine_no_sast_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_refine_no_sast_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -331,7 +324,7 @@ def sampling_experiment(total_test_case_num, llm, language):
     pipeline = SamplingPipeline(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"sampling_100_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -340,7 +333,6 @@ def sampling_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"sampling_100_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -368,14 +360,14 @@ def sampling_react_experiment(total_test_case_num, llm, language):
         ),
     )
 
-    tools = [codeql_tool, decision]
+    tools = [decision]
 
     augmenter = BasicAugmenter()
 
     pipeline = SamplingReActPipeline(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"sampling_100_react_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -384,7 +376,6 @@ def sampling_react_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"sampling_100_react_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -419,7 +410,7 @@ def sampling_react_cot_experiment(total_test_case_num, llm, language):
     pipeline = SamplingReActPipeline(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"sampling_50_react_cot_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -428,7 +419,6 @@ def sampling_react_cot_experiment(total_test_case_num, llm, language):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"sampling_50_react_cot_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -463,17 +453,16 @@ def react_code_context_experiment(total_test_case_num, llm, language):
     pipeline = AgentToSast(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"code_context_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
         total_test_case_num=total_test_case_num,
-        clone_repo=True,
+        clone_repo=False
     )
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"code_context_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -508,17 +497,16 @@ def llm_to_sast_experiment_with_context(total_test_case_num, llm, language):
     pipeline = AgentToSast(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"agent_to_sast_context_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
         total_test_case_num=total_test_case_num,
-        clone_repo=True,
+        clone_repo=False
     )
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"agent_to_sast_context_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -553,17 +541,16 @@ def selfcheck(total_test_case_num, llm, language):
     pipeline = SelfCheck(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"self_check_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
         total_test_case_num=total_test_case_num,
-        clone_repo=True,
+        clone_repo=False
     )
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_check_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -598,17 +585,16 @@ def selfcheck_sast(total_test_case_num, llm, language):
     pipeline = SelfCheckSAST(llm, tools, augmenter, model_id)
     benchmark = CVEFixBenchmark(output_identifier=f"self_check_sast_{model_id}", language=language)
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
         total_test_case_num=total_test_case_num,
-        clone_repo=True,
+        clone_repo=False
     )
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_check_sast_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -618,29 +604,28 @@ def main():
 
     total_test_case_num = float("inf")
 
-    languages = ['python', 'cpp']
+    languages = ['cpp', "go", "java", "js", "py", "php", "rb", "rs"]
 
     # Define LLM instances with desired models and temperatures
     llms = [
-        ChatOpenAI(model="gpt-4o", temperature=0),
-        ChatOpenAI(model="gpt-4o-mini", temperature=0),
-        ChatOllama(model="llama3.1", temperature=0),
-        ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0),
-        ChatMistralAI(model="codestral-latest", temperature=0),
+        ChatOpenAI(model="gpt-4o-mini", temperature=1),
+        # ChatOllama(model="llama3.1", temperature=0),
+        # ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0),
+        # ChatMistralAI(model="codestral-latest", temperature=0),
     ]
 
     # List of experiment functions
     experiments = [
-        selfcheck,
-        sampling_experiment,
-        llm_only_experiment,
-        analogical_reasoning_experiment,
-        chain_of_thought_experiment,
-        # llm_to_sast_experiment,
-        # self_refine_experiment,
-        self_refine_no_sast_experiment,
-        react_code_context_experiment,
-        sampling_react_cot_experiment,
+        # selfcheck,
+        # sampling_experiment,
+        # llm_only_experiment,
+        # analogical_reasoning_experiment,
+        # chain_of_thought_experiment,
+        # # llm_to_sast_experiment,
+        # # self_refine_experiment,
+        # self_refine_no_sast_experiment,
+        # react_code_context_experiment,
+        # sampling_react_cot_experiment,
         sampling_react_experiment,
     ]
 

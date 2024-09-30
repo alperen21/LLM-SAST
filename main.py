@@ -82,10 +82,10 @@ def llm_only_experiment(total_test_case_num, llm):
 
     augmenter = BasicNoToolAugmenter()
 
-    pipeline = LLMOnly(llm, tools, augmenter, model_id)
+    pipeline = LLMOnly(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"llm_only_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -94,7 +94,7 @@ def llm_only_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"llm_only_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -126,10 +126,10 @@ def llm_to_sast_experiment(total_test_case_num, llm):
 
     augmenter = BasicAugmenter()
 
-    pipeline = AgentToSast(llm, tools, augmenter, model_id)
+    pipeline = AgentToSast(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"agent_to_sast_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -138,7 +138,7 @@ def llm_to_sast_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"agent_to_sast_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -168,10 +168,10 @@ def self_refine_experiment(total_test_case_num, llm):
 
     tools = [codeql_tool, decision]
 
-    pipeline = SelfRefiningAgents(llm, tools, None, model_id)
+    pipeline = SelfRefiningAgents(llm, tools, None, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_refine_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -180,7 +180,7 @@ def self_refine_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_refine_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -212,10 +212,10 @@ def chain_of_thought_experiment(total_test_case_num, llm):
 
     augmenter = CoTAugmenter()
 
-    pipeline = LLMOnly(llm, tools, augmenter, model_id)
+    pipeline = LLMOnly(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"CoT_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -224,7 +224,7 @@ def chain_of_thought_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"CoT_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -256,10 +256,10 @@ def analogical_reasoning_experiment(total_test_case_num, llm):
 
     augmenter = AnalogicalReasoningAugmenter()
 
-    pipeline = LLMOnly(llm, tools, augmenter, model_id)
+    pipeline = LLMOnly(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"analogical_reasoning_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -268,7 +268,7 @@ def analogical_reasoning_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"analogical_reasoning_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -280,10 +280,10 @@ def self_refine_no_sast_experiment(total_test_case_num, llm):
 
     augmenter = BasicNoToolAugmenter()
 
-    pipeline = NoSASTSelfRefiningAgents(llm, augmenter, model_id)
+    pipeline = NoSASTSelfRefiningAgents(llm, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_refine_no_sast_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -292,7 +292,7 @@ def self_refine_no_sast_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_refine_no_sast_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -324,10 +324,10 @@ def sampling_experiment(total_test_case_num, llm):
 
     augmenter = BasicNoToolAugmenter()
 
-    pipeline = SamplingPipeline(llm, tools, augmenter, model_id)
+    pipeline = SamplingPipeline(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"sampling_100_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -336,7 +336,7 @@ def sampling_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"sampling_100_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -368,10 +368,10 @@ def sampling_react_experiment(total_test_case_num, llm):
 
     augmenter = BasicAugmenter()
 
-    pipeline = SamplingReActPipeline(llm, tools, augmenter, model_id)
+    pipeline = SamplingReActPipeline(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"sampling_100_react_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -380,7 +380,7 @@ def sampling_react_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"sampling_100_react_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -412,10 +412,10 @@ def sampling_react_cot_experiment(total_test_case_num, llm):
 
     augmenter = CoTAugmenter()
 
-    pipeline = SamplingReActPipeline(llm, tools, augmenter, model_id)
+    pipeline = SamplingReActPipeline(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"sampling_50_react_cot_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -424,7 +424,7 @@ def sampling_react_cot_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"sampling_50_react_cot_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -456,10 +456,10 @@ def react_code_context_experiment(total_test_case_num, llm):
 
     augmenter = BasicAugmenter()
 
-    pipeline = AgentToSast(llm, tools, augmenter, model_id)
+    pipeline = AgentToSast(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"code_context_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -469,7 +469,7 @@ def react_code_context_experiment(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"code_context_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -501,10 +501,10 @@ def llm_to_sast_experiment_with_context(total_test_case_num, llm):
 
     augmenter = BasicAugmenterWithContext()
 
-    pipeline = AgentToSast(llm, tools, augmenter, model_id)
+    pipeline = AgentToSast(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"agent_to_sast_context_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -514,7 +514,7 @@ def llm_to_sast_experiment_with_context(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"agent_to_sast_context_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -546,10 +546,10 @@ def selfcheck(total_test_case_num, llm):
 
     augmenter = BasicAugmenterWithContext()
 
-    pipeline = SelfCheck(llm, tools, augmenter, model_id)
+    pipeline = SelfCheck(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_check_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -559,7 +559,7 @@ def selfcheck(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_check_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -591,10 +591,10 @@ def selfcheck_sast(total_test_case_num, llm):
 
     augmenter = BasicAugmenterWithContext()
 
-    pipeline = SelfCheckSAST(llm, tools, augmenter, model_id)
+    pipeline = SelfCheckSAST(llm, tools, augmenter, "token_count")
     benchmark = PrimeVulBenchmarkDummy(output_identifier=f"self_check_sast_{model_id}")
 
-    function_level_test(
+    tokens = function_level_test(
         pipeline,
         benchmark,
         validity_checker=validityChecker,
@@ -604,7 +604,7 @@ def selfcheck_sast(total_test_case_num, llm):
 
     # Add code to write experiment name and tokens to file
     experiment_name = f"self_check_sast_{model_id}"
-    tokens = pipeline.token_usage if hasattr(pipeline, 'token_usage') else "Token usage not available"
+
     with open(f"{experiment_name}.txt", "a") as f:
         f.write(experiment_name + "\n")
         f.write(str(tokens) + "\n")
@@ -612,7 +612,7 @@ def selfcheck_sast(total_test_case_num, llm):
 
 def main():
 
-    total_test_case_num = float("inf")
+    total_test_case_num = 1#float("inf")
 
     # Define LLM instances with desired models and temperatures
     llms = [

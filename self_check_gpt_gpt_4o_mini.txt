@@ -1,4 +1,0 @@
-self_check_gpt_gpt_4o_mini
-Token usage not available
-self_check_gpt_gpt_4o_mini
-Token usage not available

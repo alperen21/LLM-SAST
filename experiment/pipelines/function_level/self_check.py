@@ -99,6 +99,7 @@ class SelfCheck(LLMOnly):
                 response = self.llm.invoke(selfCheckPrompt)
 
                 self.tokens_used += cb.total_tokens
+                print("--->", cb.total_tokens)
         
         else:
             response = self.llm.invoke(augmented_prompt)

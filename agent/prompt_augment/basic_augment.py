@@ -240,7 +240,6 @@ class BasicNoToolAugmenter(PromptAugmenter):
         ```c
         {code}
         ```
-        Please don't make decision based on vulnerabilities that may exist in the code but the vulnerabilities you concretely see in the code with the information you were provided with\n
         When you have made your decision either invoke the make_decision tool or write your decision as @@Vulnerable@@ or @@Not Vulnerable@@.\n
         """
         
